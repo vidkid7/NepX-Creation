@@ -67,4 +67,6 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   secret: process.env.NEXTAUTH_SECRET,
+  // Required for production (Railway, Vercel, etc.) so NextAuth trusts the request host
+  trustHost: true,
 };

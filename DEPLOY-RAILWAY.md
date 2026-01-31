@@ -120,19 +120,30 @@ npx prisma db seed
 4. Wait until both finish. You should see `✅ Created admin user: admin@nepxcreation.com` and `🎉 Seed completed successfully!`
 5. Log in at **your-app-url/admin** with **admin@nepxcreation.com** / **admin123**.
 
-**Option B – Railway CLI from your computer**
+**Option B – From your PC using the public database URL**
 
-Your local `.env` has `DATABASE_URL=localhost`, which overrides Railway’s URL. So **don’t** rely on `railway run` with that `.env` in place. Either:
+`postgres.railway.internal` only works **inside** Railway. To run Prisma from your PC you must use the **public** URL.
 
-- Run the commands in **Railway’s Shell** (Option A), or  
-- Temporarily rename your local `.env` (e.g. to `.env.local.backup`), then run:
+1. In Railway, open your **PostgreSQL** service (not the app).
+2. Go to **Variables** (or **Connect**).
+3. Find **`DATABASE_PUBLIC_URL`** and copy its value. (If you don’t see it, check the **Connect** tab or enable **Public networking** for the Postgres service.)
+4. On your PC, in the project folder, run **one** of the following.
 
-```bash
-railway run npx prisma db push
-railway run npx prisma db seed
-```
+   **PowerShell (Windows):**
+   ```powershell
+   $env:DATABASE_URL="<paste DATABASE_PUBLIC_URL here>"; npx prisma db push; npx prisma db seed
+   ```
+   Replace `<paste DATABASE_PUBLIC_URL here>` with the actual URL (in quotes).
 
-Then rename `.env.local.backup` back to `.env`.
+   **Cmd or Git Bash:**
+   ```bash
+   set DATABASE_URL=<paste DATABASE_PUBLIC_URL here>
+   npx prisma db push
+   npx prisma db seed
+   ```
+   (In Git Bash use `export DATABASE_URL="..."` then the two `npx` commands.)
+
+5. Do **not** put the public URL in your `.env` file; keep `.env` for local dev (e.g. `localhost` or SQLite). The deployed app should keep using the internal `DATABASE_URL` from Railway.
 
 ---
 
@@ -160,3 +171,18 @@ Then rename `.env.local.backup` back to `.env`.
 - [ ] Site and `/admin` open and login works
 
 If a deploy fails, check the **Deployments** tab and the build logs for errors (e.g. missing env vars or Prisma errors).
+
+---
+
+## Admin panel not working like localhost?
+
+If the admin panel loads but login fails, redirects in a loop, or sessions don’t stick:
+
+1. **NEXTAUTH_URL** (app service → Variables) must be **exactly** your app URL:
+   - `https://your-app-name.up.railway.app` (no trailing slash)
+   - Same as the URL you use in the browser. If you use a custom domain, use that.
+2. **NEXTAUTH_SECRET** must be set (long random string).
+3. **DATABASE_URL** must be set and the **seed must have been run** so the admin user exists (see step 8).
+4. Redeploy after changing variables (Railway usually redeploys automatically).
+
+If login works but pages are blank or data doesn’t save: the app uses the database for auth and (where implemented) for content; ensure the database is connected and migrated (`npx prisma db push` and `npx prisma db seed` run once).
