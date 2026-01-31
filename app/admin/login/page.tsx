@@ -1,19 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useState, useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Lock, Mail, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Lock, Mail, Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react";
 import Button from "@/components/ui/Button";
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/admin/dashboard");
+    }
+  }, [status, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,16 +37,25 @@ export default function AdminLoginPage() {
 
       if (result?.error) {
         setError("Invalid email or password");
+        setIsLoading(false);
       } else {
-        router.push("/admin/dashboard");
-        router.refresh();
+        // Force a full page navigation to ensure server components re-render
+        window.location.href = "/admin/dashboard";
       }
     } catch {
       setError("Something went wrong. Please try again.");
-    } finally {
       setIsLoading(false);
     }
   };
+
+  // Show loading while checking session
+  if (status === "loading" || status === "authenticated") {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center px-4">
