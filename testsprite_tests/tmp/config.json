@@ -1,0 +1,16 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3002",
+  "executionArgs": {
+    "projectName": "NepX Creation",
+    "projectPath": "d:\\NepX Creation",
+    "testIds": [],
+    "additionalInstruction": "Test the Spline 3D responsiveness, Services section clickability, Technologies section design, and admin panel customization features",
+    "envs": {
+      "API_KEY": "sk-user-gqd-ep8fWZzpFTmMASJXyAbLsmehBCqUXy_cW7KtOgHf0S1mDmsL8PyShuK_Jcx5VCsuDxuwMgnSzMmyUSiGsRk3Up8gHGiygMGAQKvBZo4w-ICvAMm7RigfqmwJb_9n1E0"
+    }
+  },
+  "proxy": "http://d8dd0ff1-af3d-46f5-9186-86b0c4153c6d:gtfhqjgxTELNb1UXXdeV44gdn2j1Jymy@tun.testsprite.com:8080"
+}

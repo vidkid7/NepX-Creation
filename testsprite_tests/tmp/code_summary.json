@@ -1,0 +1,105 @@
+{
+  "tech_stack": ["TypeScript", "Next.js 14", "React 18", "Tailwind CSS", "Framer Motion", "Prisma", "PostgreSQL", "NextAuth.js"],
+  "features": [
+    {
+      "name": "Hero Section with Spline 3D",
+      "description": "Responsive hero section featuring embedded Spline 3D design, gradient text, call-to-action buttons, and company statistics",
+      "files": ["components/sections/HeroSection.tsx"]
+    },
+    {
+      "name": "Services Section",
+      "description": "Clickable service cards with detailed sub-services, industry-specific solutions grid, and navigation to individual service pages",
+      "files": ["components/sections/ServicesSection.tsx", "lib/services-data.ts", "app/services/page.tsx", "app/services/[id]/page.tsx"]
+    },
+    {
+      "name": "Technologies Section",
+      "description": "Interactive tech stack display with category tabs, expertise bars, animated cards, and modern visual design",
+      "files": ["components/sections/TechnologiesSection.tsx"]
+    },
+    {
+      "name": "About Section",
+      "description": "Company overview with values, mission, vision, and statistics",
+      "files": ["components/sections/AboutSection.tsx"]
+    },
+    {
+      "name": "Portfolio Section",
+      "description": "Filterable project showcase with hover effects and category filtering",
+      "files": ["components/sections/PortfolioSection.tsx"]
+    },
+    {
+      "name": "Testimonials Section",
+      "description": "Client testimonials carousel with ratings and avatars",
+      "files": ["components/sections/TestimonialsSection.tsx"]
+    },
+    {
+      "name": "Contact Section",
+      "description": "Contact form with validation and submission handling",
+      "files": ["components/sections/ContactSection.tsx", "app/api/contact/route.ts"]
+    },
+    {
+      "name": "Navigation",
+      "description": "Responsive navbar with scroll effects, mobile menu, and smooth scrolling",
+      "files": ["components/layout/Navbar.tsx", "components/layout/Footer.tsx"]
+    },
+    {
+      "name": "Admin Dashboard",
+      "description": "Protected admin area with statistics, charts, and recent activity",
+      "files": ["app/admin/dashboard/page.tsx", "app/admin/layout.tsx"]
+    },
+    {
+      "name": "Admin Services Management",
+      "description": "CRUD operations for managing services with modal forms",
+      "files": ["app/admin/services/page.tsx"]
+    },
+    {
+      "name": "Admin Portfolio Management",
+      "description": "Project management with category filters and featured flags",
+      "files": ["app/admin/portfolio/page.tsx"]
+    },
+    {
+      "name": "Admin Content Management",
+      "description": "Edit static content sections (Hero, About, Contact)",
+      "files": ["app/admin/content/page.tsx"]
+    },
+    {
+      "name": "Admin Testimonials Management",
+      "description": "Manage client testimonials with ratings",
+      "files": ["app/admin/testimonials/page.tsx"]
+    },
+    {
+      "name": "Admin Technologies Management",
+      "description": "Manage tech stack categories and individual technologies with expertise levels",
+      "files": ["app/admin/technologies/page.tsx"]
+    },
+    {
+      "name": "Admin Messages",
+      "description": "View and manage contact form submissions",
+      "files": ["app/admin/messages/page.tsx"]
+    },
+    {
+      "name": "Admin Settings",
+      "description": "Site-wide settings including theme, SEO, and social links",
+      "files": ["app/admin/settings/page.tsx"]
+    },
+    {
+      "name": "Admin Users",
+      "description": "User management with role assignment",
+      "files": ["app/admin/users/page.tsx"]
+    },
+    {
+      "name": "Authentication",
+      "description": "NextAuth.js authentication with credentials provider",
+      "files": ["lib/auth.ts", "app/admin/login/page.tsx", "app/api/auth/[...nextauth]/route.ts", "middleware.ts"]
+    },
+    {
+      "name": "UI Components",
+      "description": "Reusable UI components including Button, GlassCard, Input, SectionHeading",
+      "files": ["components/ui/Button.tsx", "components/ui/GlassCard.tsx", "components/ui/Input.tsx", "components/ui/SectionHeading.tsx"]
+    },
+    {
+      "name": "Animation Components",
+      "description": "Framer Motion animation wrappers for fade-in, stagger, and animated icons",
+      "files": ["components/animations/FadeIn.tsx", "components/animations/StaggerChildren.tsx", "components/animations/AnimatedIcon.tsx", "components/animations/ParticleBackground.tsx"]
+    }
+  ]
+}

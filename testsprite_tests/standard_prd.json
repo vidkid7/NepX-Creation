@@ -1,0 +1,207 @@
+{
+  "meta": {
+    "project": "NepX Creation Website",
+    "date": "2026-01-31",
+    "prepared_by": "Software Development Manager"
+  },
+  "product_overview": "NepX Creation Website is a premium, ultra-modern IT company website built on Next.js 14 featuring a dark theme, advanced animations including Spline 3D integration, and a comprehensive admin CMS panel. It delivers a sleek user experience for visitors and offers powerful content and site management capabilities through a secure admin dashboard.",
+  "core_goals": [
+    "Provide an engaging and visually impressive homepage leveraging 3D Spline animations and smooth UI transitions.",
+    "Offer an informative company presence including detailed about, services, portfolio, testimonials, and contact sections accessible to public users.",
+    "Implement an advanced, user-friendly admin panel enabling secure authentication, content management, CRUD operations for services, portfolio, testimonials, and site settings.",
+    "Ensure a responsive, accessible, and performant frontend experience with dark theme, glassmorphism UI design, and state-of-the-art animations.",
+    "Secure all admin interactions using NextAuth.js with credentials provider and enforce strict API and session protection."
+  ],
+  "key_features": [
+    "Homepage with hero section featuring embedded Spline 3D viewer, animated text, gradient backgrounds, and call-to-action elements.",
+    "Responsive navigation bar with smooth scroll and mobile-friendly menu.",
+    "Public pages covering About, Services, Portfolio, Testimonials, and Contact form with scroll reveal animations.",
+    "Contact form with backend API endpoint supporting message submission with validation and server error handling.",
+    "Admin authentication using NextAuth.js supporting credential login and secure session management.",
+    "Admin dashboard presenting overview statistics, recent activity, and quick action shortcuts.",
+    "Content management for hero, about, and contact sections through admin panel.",
+    "CRUD functionalities for managing Services with icon and gradient selection.",
+    "Portfolio management including project image uploads and category filters.",
+    "Testimonial management with rating and client details.",
+    "Site settings for editing theme colors, fonts, SEO metadata, and social media links.",
+    "User role and permission management in admin panel distinguishing admins and editors."
+  ],
+  "user_flow_summary": [
+    "Public users land on the homepage to interact with engaging 3D hero section and navigate through company information sections via responsive navbar.",
+    "Users access contact page to submit inquiries via the contact form which interacts with a backend API validating and persisting submissions.",
+    "Admin users log in through a secure credentials-based authentication flow with session management via NextAuth.js.",
+    "Authenticated admins navigate admin dashboard for monitoring and quick operations.",
+    "Admins manage content sections such as hero, about, services, portfolio, testimonials, and general site settings through dedicated admin pages with form-based CRUD operations.",
+    "Admins monitor and respond to contact form submissions from the messages management area."
+  ],
+  "validation_criteria": [
+    "Homepage loads with embedded Spline 3D viewer properly rendered and animations running smoothly on supported devices.",
+    "Navigation bar is fully responsive with functional smooth scrolling and mobile menu toggling.",
+    "Contact form submits data to backend API successfully, enforcing required fields and responding with correct HTTP status codes.",
+    "Admin authentication restricts access to protected admin routes; invalid login attempts are handled gracefully.",
+    "Admin dashboard accurately reflects up-to-date statistics and recent system activity.",
+    "All CRUD operations in the admin panel (services, portfolio projects, testimonials) persist changes to the PostgreSQL database correctly.",
+    "Site settings edits update the live site appearance including colors, fonts, and SEO metadata.",
+    "User role management enforces correct permissions and access control within the admin interface.",
+    "Performance benchmarks for page load, animation smoothness, and responsiveness are met across desktop and mobile devices.",
+    "Security measures including password hashing, input sanitization, CSRF protection, and rate limiting function as expected to protect sensitive admin functions."
+  ],
+  "code_summary": {
+    "tech_stack": [
+      "TypeScript",
+      "Next.js 14",
+      "React",
+      "Tailwind CSS",
+      "Framer Motion",
+      "Prisma",
+      "PostgreSQL",
+      "NextAuth.js"
+    ],
+    "features": [
+      {
+        "name": "Homepage",
+        "description": "Main landing page with hero section featuring Spline 3D, about section, services, portfolio, testimonials, and contact form",
+        "files": [
+          "app/page.tsx",
+          "components/sections/HeroSection.tsx",
+          "components/sections/AboutSection.tsx",
+          "components/sections/ServicesSection.tsx",
+          "components/sections/PortfolioSection.tsx",
+          "components/sections/TestimonialsSection.tsx",
+          "components/sections/ContactSection.tsx"
+        ]
+      },
+      {
+        "name": "Navigation",
+        "description": "Responsive navigation bar with smooth scroll to sections and mobile menu",
+        "files": [
+          "components/layout/Navbar.tsx"
+        ]
+      },
+      {
+        "name": "Contact Form",
+        "description": "Contact form submission API endpoint",
+        "files": [
+          "app/api/contact/route.ts",
+          "components/sections/ContactSection.tsx"
+        ],
+        "api_doc": {
+          "openapi": "3.0.0",
+          "paths": {
+            "/api/contact": {
+              "post": {
+                "summary": "Submit contact form",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "subject": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "email",
+                          "subject",
+                          "message"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "201": {
+                    "description": "Message sent successfully"
+                  },
+                  "400": {
+                    "description": "Validation error"
+                  },
+                  "500": {
+                    "description": "Server error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "Admin Authentication",
+        "description": "Admin login with NextAuth.js credentials provider",
+        "files": [
+          "app/admin/login/page.tsx",
+          "app/api/auth/[...nextauth]/route.ts",
+          "lib/auth.ts",
+          "middleware.ts"
+        ]
+      },
+      {
+        "name": "Admin Dashboard",
+        "description": "Admin dashboard with overview statistics and quick actions",
+        "files": [
+          "app/admin/dashboard/page.tsx"
+        ]
+      },
+      {
+        "name": "Admin Content Management",
+        "description": "Edit hero, about, and contact content sections",
+        "files": [
+          "app/admin/content/page.tsx"
+        ]
+      },
+      {
+        "name": "Admin Services Management",
+        "description": "CRUD operations for services with icon and gradient selection",
+        "files": [
+          "app/admin/services/page.tsx"
+        ]
+      },
+      {
+        "name": "Admin Portfolio Management",
+        "description": "CRUD operations for portfolio projects with image upload and category filtering",
+        "files": [
+          "app/admin/portfolio/page.tsx"
+        ]
+      },
+      {
+        "name": "Admin Testimonials Management",
+        "description": "CRUD operations for client testimonials with rating",
+        "files": [
+          "app/admin/testimonials/page.tsx"
+        ]
+      },
+      {
+        "name": "Admin Messages",
+        "description": "View and manage contact form submissions",
+        "files": [
+          "app/admin/messages/page.tsx"
+        ]
+      },
+      {
+        "name": "Admin Settings",
+        "description": "Site settings including theme colors, fonts, SEO metadata, and social links",
+        "files": [
+          "app/admin/settings/page.tsx"
+        ]
+      },
+      {
+        "name": "Admin Users",
+        "description": "User management with admin and editor roles",
+        "files": [
+          "app/admin/users/page.tsx"
+        ]
+      }
+    ]
+  }
+}

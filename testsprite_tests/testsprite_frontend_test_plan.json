@@ -1,0 +1,588 @@
+[
+  {
+    "id": "TC001",
+    "title": "Homepage Spline 3D Viewer Load and Animation",
+    "description": "Verify that the homepage loads the Spline 3D viewer correctly and animations run smoothly on supported devices.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the homepage URL"
+      },
+      {
+        "type": "assertion",
+        "description": "Check that the Spline 3D viewer component is rendered"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that the 3D animations are running without glitches or freezes"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm animations match design specifications for transitions and smoothness"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Responsive Navigation Bar Functionality",
+    "description": "Ensure the navigation bar is responsive with functional smooth scrolling and mobile menu toggling.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Load the website in a desktop viewport"
+      },
+      {
+        "type": "action",
+        "description": "Click on each navigation item"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the page scrolls smoothly to the correct section"
+      },
+      {
+        "type": "action",
+        "description": "Resize browser to a mobile viewport"
+      },
+      {
+        "type": "action",
+        "description": "Click the mobile menu toggle to open the menu"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm the mobile menu is visible with navigation links"
+      },
+      {
+        "type": "action",
+        "description": "Click a menu link within the mobile menu"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify smooth scrolling to the correct section and mobile menu closes"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Contact Form Successful Submission",
+    "description": "Test that the contact form submits data successfully to the backend API and returns status 201 with valid inputs.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to contact page"
+      },
+      {
+        "type": "action",
+        "description": "Fill in name, email, subject, and message with valid data"
+      },
+      {
+        "type": "action",
+        "description": "Submit the contact form"
+      },
+      {
+        "type": "assertion",
+        "description": "Validate backend API responds with HTTP status 201"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm user sees a success confirmation message"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Contact Form Validation Error Handling",
+    "description": "Verify that submitting the contact form with missing or invalid fields results in a validation error and prevents submission.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to contact page"
+      },
+      {
+        "type": "action",
+        "description": "Submit the form with one or more required fields empty"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify frontend validation prevents submission"
+      },
+      {
+        "type": "action",
+        "description": "Submit the form with invalid email format"
+      },
+      {
+        "type": "assertion",
+        "description": "Backend API responds with HTTP status 400 and validation error message"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Contact Form Server Error Handling",
+    "description": "Ensure that server errors during contact form submission respond with HTTP 500 and appropriate user feedback.",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Simulate backend server failure for contact form API"
+      },
+      {
+        "type": "action",
+        "description": "Submit contact form with valid data"
+      },
+      {
+        "type": "assertion",
+        "description": "API responds with HTTP status 500"
+      },
+      {
+        "type": "assertion",
+        "description": "User sees a generic error message indicating submission failure"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Admin Authentication Success",
+    "description": "Verify successful admin login using NextAuth.js credentials provider and secure session management.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to admin login page"
+      },
+      {
+        "type": "action",
+        "description": "Enter valid admin username and password"
+      },
+      {
+        "type": "action",
+        "description": "Submit login form"
+      },
+      {
+        "type": "assertion",
+        "description": "User is redirected to the admin dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Session token is securely stored and API routes are accessible"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Admin Authentication Failure Handling",
+    "description": "Verify that invalid admin login attempts are rejected with proper error messages and no session is created.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to admin login page"
+      },
+      {
+        "type": "action",
+        "description": "Enter invalid username and/or password"
+      },
+      {
+        "type": "action",
+        "description": "Submit login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Access is denied with a descriptive error message"
+      },
+      {
+        "type": "assertion",
+        "description": "No session token is created and protected admin routes are inaccessible"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Admin Dashboard Overview Accuracy",
+    "description": "Verify that the admin dashboard displays accurate and up-to-date statistics and recent activity information.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in as admin and navigate to the dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Overview statistics match current database data"
+      },
+      {
+        "type": "assertion",
+        "description": "Recent activity logs display correct and latest actions"
+      },
+      {
+        "type": "assertion",
+        "description": "Quick action shortcuts function as expected"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "CRUD Operations on Services with Icon and Gradient Selection",
+    "description": "Test create, read, update, and delete operations for service items including icon and gradient editing in the admin panel.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in as admin and navigate to services management page"
+      },
+      {
+        "type": "action",
+        "description": "Create a new service with valid name, description, icon, and gradient selection"
+      },
+      {
+        "type": "assertion",
+        "description": "New service appears in the list with correct details"
+      },
+      {
+        "type": "action",
+        "description": "Edit the existing service to change icon and gradient"
+      },
+      {
+        "type": "assertion",
+        "description": "Service updates are saved and reflected correctly"
+      },
+      {
+        "type": "action",
+        "description": "Delete a service"
+      },
+      {
+        "type": "assertion",
+        "description": "Service is removed from the list and database"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Portfolio Management CRUD With Category Filters",
+    "description": "Verify CRUD functionality for portfolio projects including image uploads and filtering by categories.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in as admin and navigate to portfolio management page"
+      },
+      {
+        "type": "action",
+        "description": "Create a new portfolio project with title, description, category, and upload an image"
+      },
+      {
+        "type": "assertion",
+        "description": "Project is visible in portfolio list with correct details"
+      },
+      {
+        "type": "action",
+        "description": "Filter portfolio list by a specific category"
+      },
+      {
+        "type": "assertion",
+        "description": "Only projects matching the filter category are displayed"
+      },
+      {
+        "type": "action",
+        "description": "Edit portfolio project details and update image"
+      },
+      {
+        "type": "assertion",
+        "description": "Changes are saved and visible in the list"
+      },
+      {
+        "type": "action",
+        "description": "Delete a portfolio project"
+      },
+      {
+        "type": "assertion",
+        "description": "Project is removed from the database and UI"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Testimonial Management with Rating Function",
+    "description": "Test CRUD operations for client testimonials including rating input and display.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in to admin panel and open testimonials management page"
+      },
+      {
+        "type": "action",
+        "description": "Add a new testimonial with client name, details, and rating"
+      },
+      {
+        "type": "assertion",
+        "description": "Testimonial is saved and visible with correct rating"
+      },
+      {
+        "type": "action",
+        "description": "Update testimonial text and rating"
+      },
+      {
+        "type": "assertion",
+        "description": "Updates are persisted and displayed correctly"
+      },
+      {
+        "type": "action",
+        "description": "Delete a testimonial"
+      },
+      {
+        "type": "assertion",
+        "description": "Testimonial no longer appears in the list"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Admin Content Management for Hero, About, and Contact Sections",
+    "description": "Verify that admins can edit and save content for hero, about, and contact sections via the admin panel.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in as admin and navigate to content management page"
+      },
+      {
+        "type": "action",
+        "description": "Edit text and media content for hero section and save"
+      },
+      {
+        "type": "assertion",
+        "description": "Changes reflect correctly on the live homepage"
+      },
+      {
+        "type": "action",
+        "description": "Edit about section content and save"
+      },
+      {
+        "type": "assertion",
+        "description": "Updated about information appears properly on public about page"
+      },
+      {
+        "type": "action",
+        "description": "Edit contact section content such as contact info and save"
+      },
+      {
+        "type": "assertion",
+        "description": "Contact section reflects updates immediately"
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Site Settings Update and Live Appearance Change",
+    "description": "Test that editing site settings like theme colors, fonts, SEO metadata, and social media links updates live presentation.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in as admin and navigate to settings page"
+      },
+      {
+        "type": "action",
+        "description": "Change primary theme color, font family, SEO title, and social media URLs"
+      },
+      {
+        "type": "action",
+        "description": "Save the updated site settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Live site reflects new theme colors and fonts"
+      },
+      {
+        "type": "assertion",
+        "description": "SEO metadata updates are verifiable via page source"
+      },
+      {
+        "type": "assertion",
+        "description": "Social media links are updated in site footer or header as appropriate"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Admin User Role and Permission Enforcement",
+    "description": "Verify that user roles (admin, editor) enforce proper permission boundaries in the admin panel.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in as admin user and verify full access to all admin pages and actions"
+      },
+      {
+        "type": "assertion",
+        "description": "Admin can view and edit user roles including adding editors"
+      },
+      {
+        "type": "action",
+        "description": "Log in as editor user"
+      },
+      {
+        "type": "assertion",
+        "description": "Editor role cannot access user management page"
+      },
+      {
+        "type": "assertion",
+        "description": "Editor can perform limited content management actions based on permissions"
+      },
+      {
+        "type": "action",
+        "description": "Attempt unauthorized action as editor (e.g., delete users)"
+      },
+      {
+        "type": "assertion",
+        "description": "Action is denied with appropriate access error"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Admin Messages Management and Contact Form Submissions",
+    "description": "Ensure that the admin messages page displays contact form submissions and allows management actions such as marking as read or deleting.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in as admin and navigate to messages management page"
+      },
+      {
+        "type": "assertion",
+        "description": "Recent contact form messages are listed with correct details"
+      },
+      {
+        "type": "action",
+        "description": "Mark a message as read"
+      },
+      {
+        "type": "assertion",
+        "description": "Message status updates to read and persists"
+      },
+      {
+        "type": "action",
+        "description": "Delete a message from the list"
+      },
+      {
+        "type": "assertion",
+        "description": "Message is removed from database and UI"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "Protection of Admin Routes and API Endpoints",
+    "description": "Verify that admin routes and sensitive API endpoints are protected and inaccessible without valid authentication and session tokens.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt to access admin dashboard or content pages without authentication"
+      },
+      {
+        "type": "assertion",
+        "description": "Access is redirected to login page or denied"
+      },
+      {
+        "type": "action",
+        "description": "Make API requests to protected endpoints without valid session token"
+      },
+      {
+        "type": "assertion",
+        "description": "API responds with 401 Unauthorized or 403 Forbidden"
+      },
+      {
+        "type": "action",
+        "description": "Use valid authentication to access admin pages and APIs"
+      },
+      {
+        "type": "assertion",
+        "description": "Access granted with proper session verification"
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Security Mechanisms: Password Hashing, CSRF and Rate Limiting",
+    "description": "Verify that passwords are hashed securely, CSRF tokens protect forms, and rate limiting prevents brute force attempts.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Create a new admin user and verify password hash stored in database is not plaintext"
+      },
+      {
+        "type": "action",
+        "description": "Submit forms from admin panel without CSRF token"
+      },
+      {
+        "type": "assertion",
+        "description": "Form submissions are rejected with CSRF error"
+      },
+      {
+        "type": "action",
+        "description": "Attempt multiple rapid login attempts with wrong credentials"
+      },
+      {
+        "type": "assertion",
+        "description": "Rate limiting blocks further attempts after threshold is exceeded"
+      }
+    ]
+  },
+  {
+    "id": "TC018",
+    "title": "Performance Benchmark for Homepage Load and Animation Smoothness",
+    "description": "Test that the homepage meets defined performance benchmarks for load time and animation smoothness on desktop and mobile.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Load homepage on desktop device or emulator"
+      },
+      {
+        "type": "assertion",
+        "description": "Page load time is within acceptable performance threshold (e.g. under 3 seconds)"
+      },
+      {
+        "type": "action",
+        "description": "Observe and measure animation frame rates and smoothness"
+      },
+      {
+        "type": "assertion",
+        "description": "Animations do not drop frames and transitions are fluid"
+      },
+      {
+        "type": "action",
+        "description": "Repeat tests on mobile device"
+      },
+      {
+        "type": "assertion",
+        "description": "Performance benchmarks are met on mobile as well"
+      }
+    ]
+  }
+]
