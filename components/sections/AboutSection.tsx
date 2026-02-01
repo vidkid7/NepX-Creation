@@ -86,7 +86,8 @@ export default function AboutSection() {
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className="p-4 rounded-xl bg-white/5 border border-white/5"
+                    whileHover={{ y: -2 }}
+                    className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-primary/20 transition-all"
                   >
                     <div className="text-3xl font-heading font-bold gradient-text">
                       {stat.number}

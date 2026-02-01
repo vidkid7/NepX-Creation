@@ -14,6 +14,7 @@ import {
   Mail,
   LogOut,
   Code2,
+  GraduationCap,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,11 @@ const menuItems = [
     title: "Services",
     href: "/admin/services",
     icon: Briefcase,
+  },
+  {
+    title: "Courses",
+    href: "/admin/courses",
+    icon: GraduationCap,
   },
   {
     title: "Portfolio",

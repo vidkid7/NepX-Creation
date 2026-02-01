@@ -9,6 +9,7 @@ import TechnologiesSection from "@/components/sections/TechnologiesSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import ContactSection from "@/components/sections/ContactSection";
 import CTASection from "@/components/sections/CTASection";
+import CoursesSection from "@/components/sections/CoursesSection";
 import ParticleBackground from "@/components/animations/ParticleBackground";
 
 export default function Home() {
@@ -24,6 +25,7 @@ export default function Home() {
       <HeroSection />
       <AboutSection />
       <ServicesSection />
+      <CoursesSection />
       <PortfolioSection />
       <WhyChooseUsSection />
       <TechnologiesSection />
