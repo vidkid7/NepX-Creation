@@ -16,12 +16,24 @@
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+    /* MAXIMUM PERFORMANCE - Force GPU acceleration on everything */
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    perspective: 1000;
   }
 
   html {
-    scroll-behavior: smooth;
     overflow-x: hidden;
     scroll-padding-top: 80px;
+    /* ULTRA SMOOTH SCROLLING */
+    scroll-behavior: auto; /* Changed from smooth for instant response */
+    -webkit-overflow-scrolling: touch;
+    /* Force hardware acceleration */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
   }
 
   body {
@@ -32,6 +44,22 @@
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* MAXIMUM SCROLL PERFORMANCE */
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
+    overscroll-behavior-x: none;
+    text-rendering: optimizeSpeed;
+    /* Force GPU layer */
+    will-change: scroll-position;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+
+  /* Performance optimization for all elements */
+  * {
+    /* Reduce repaints during scroll */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
   }
 
   /* Custom scrollbar with glow */
@@ -71,6 +99,9 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
     position: relative;
+    /* Performance optimization */
+    will-change: transform;
+    transform: translateZ(0);
   }
 
   .glass-card-hover {
@@ -84,7 +115,7 @@
       0 8px 32px rgba(0, 212, 255, 0.12),
       0 0 0 1px rgba(0, 212, 255, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    transform: translateY(-4px);
+    transform: translateY(-4px) translateZ(0);
   }
 
   /* Gradient text with shimmer */
@@ -95,6 +126,8 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation: shimmer 3s linear infinite;
+    /* Performance optimization */
+    will-change: background-position;
   }
 
   @keyframes shimmer {
@@ -569,6 +602,13 @@ spline-viewer {
   width: 100%;
   height: 100%;
   --poster-color: transparent;
+  /* Hardware acceleration for smooth performance */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform;
+  /* Optimize rendering */
+  contain: layout style paint;
 }
 
 /* Custom animations for specific states */
@@ -595,4 +635,91 @@ spline-viewer {
   .gradient-text {
     -webkit-text-fill-color: #00d4ff;
   }
+}
+
+
+/* ========================================
+   PERFORMANCE OPTIMIZATIONS
+   ======================================== */
+
+/* Optimize images for faster loading */
+img {
+  content-visibility: auto;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Optimize sections for better scroll performance */
+section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Optimize animations to use GPU */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateZ(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+  }
+}
+
+/* Optimize blur effects */
+.backdrop-blur,
+[class*="backdrop-blur"] {
+  -webkit-backdrop-filter: blur(var(--blur-amount, 20px));
+  backdrop-filter: blur(var(--blur-amount, 20px));
+  will-change: backdrop-filter;
+}
+
+/* Optimize gradients */
+.bg-gradient-to-r,
+.bg-gradient-to-b,
+.bg-gradient-to-l,
+.bg-gradient-to-t,
+[class*="bg-gradient"] {
+  will-change: background-position;
+}
+
+/* Smooth scrolling container optimization */
+.scroll-smooth {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Optimize fixed/sticky elements */
+.fixed,
+.sticky,
+[class*="fixed"],
+[class*="sticky"] {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }

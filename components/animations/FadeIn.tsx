@@ -13,10 +13,10 @@ interface FadeInProps {
 }
 
 const directions = {
-  up: { y: 30, x: 0 },
-  down: { y: -30, x: 0 },
-  left: { y: 0, x: 30 },
-  right: { y: 0, x: -30 },
+  up: { y: 20, x: 0 }, // Reduced from 30 to 20
+  down: { y: -20, x: 0 }, // Reduced from -30 to -20
+  left: { y: 0, x: 20 }, // Reduced from 30 to 20
+  right: { y: 0, x: -20 }, // Reduced from -30 to -20
   none: { y: 0, x: 0 },
 };
 
@@ -24,15 +24,15 @@ export default function FadeIn({
   children,
   direction = "up",
   delay = 0,
-  duration = 0.6,
+  duration = 0.4, // Reduced from 0.6 to 0.4 for snappier feel
   className = "",
   once = true,
 }: FadeInProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { 
     once, 
-    margin: "-50px",
-    amount: 0.1 
+    margin: "-100px", // Increased from -50px for earlier trigger
+    amount: 0.05 // Reduced from 0.1 for earlier trigger
   });
 
   return (
@@ -51,9 +51,13 @@ export default function FadeIn({
       transition={{
         duration,
         delay,
-        ease: [0.16, 1, 0.3, 1],
+        ease: [0.25, 0.1, 0.25, 1], // Optimized easing for snappier feel
       }}
       className={className}
+      style={{
+        willChange: 'transform, opacity',
+        transform: 'translateZ(0)', // Force GPU acceleration
+      }}
     >
       {children}
     </motion.div>

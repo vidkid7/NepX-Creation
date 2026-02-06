@@ -13,58 +13,21 @@ import {
   Save,
   Star,
   Upload,
+  Loader2,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import { Input, Textarea } from "@/components/ui/Input";
+import { useProjects } from "@/hooks/useProjects";
+import toast, { Toaster } from "react-hot-toast";
 
 const categories = ["All", "Web", "Mobile", "Software", "Marketing"];
 
-// Mock data
-const initialProjects = [
-  {
-    id: "1",
-    title: "E-Commerce Platform",
-    description: "Full-stack e-commerce solution with advanced inventory management and payment integration.",
-    image: "https://images.unsplash.com/photo-1661956602116-aa6865609028?w=800&auto=format&fit=crop",
-    category: "Web",
-    technologies: ["Next.js", "Node.js", "PostgreSQL", "Stripe"],
-    link: "https://example.com",
-    github: "https://github.com",
-    featured: true,
-    active: true,
-  },
-  {
-    id: "2",
-    title: "Healthcare Mobile App",
-    description: "Patient management and telemedicine application with real-time video consultations.",
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop",
-    category: "Mobile",
-    technologies: ["React Native", "Firebase", "WebRTC"],
-    link: "",
-    github: "",
-    featured: true,
-    active: true,
-  },
-  {
-    id: "3",
-    title: "Enterprise CRM System",
-    description: "Custom CRM with AI-powered analytics, automation workflows, and team collaboration tools.",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop",
-    category: "Software",
-    technologies: ["React", "Python", "TensorFlow", "AWS"],
-    link: "",
-    github: "",
-    featured: false,
-    active: true,
-  },
-];
-
 export default function PortfolioPage() {
-  const [projects, setProjects] = useState(initialProjects);
+  const { projects, loading, createProject, updateProject, deleteProject } = useProjects();
   const [filterCategory, setFilterCategory] = useState("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProject, setEditingProject] = useState<typeof initialProjects[0] | null>(null);
+  const [editingProject, setEditingProject] = useState<typeof projects[0] | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -76,12 +39,13 @@ export default function PortfolioPage() {
     featured: false,
     active: true,
   });
+  const [isSaving, setIsSaving] = useState(false);
 
   const filteredProjects = filterCategory === "All"
     ? projects
     : projects.filter((p) => p.category === filterCategory);
 
-  const handleEdit = (project: typeof initialProjects[0]) => {
+  const handleEdit = (project: typeof projects[0]) => {
     setEditingProject(project);
     setFormData({
       title: project.title,
@@ -113,20 +77,47 @@ export default function PortfolioPage() {
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
-    if (editingProject) {
-      setProjects(projects.map((p) =>
-        p.id === editingProject.id ? { ...p, ...formData } : p
-      ));
-    } else {
-      setProjects([...projects, { id: Date.now().toString(), ...formData }]);
+  const handleSave = async () => {
+    if (!formData.title.trim()) {
+      toast.error("Title is required");
+      return;
     }
-    setIsModalOpen(false);
+    if (!formData.description.trim()) {
+      toast.error("Description is required");
+      return;
+    }
+    if (!formData.image.trim()) {
+      toast.error("Image URL is required");
+      return;
+    }
+    if (formData.technologies.filter(t => t.trim()).length === 0) {
+      toast.error("At least one technology is required");
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const cleanedData = {
+        ...formData,
+        technologies: formData.technologies.filter(t => t.trim()),
+      };
+
+      if (editingProject) {
+        await updateProject(editingProject.id, cleanedData);
+      } else {
+        await createProject(cleanedData);
+      }
+      
+      setIsModalOpen(false);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this project?")) {
-      setProjects(projects.filter((p) => p.id !== id));
+      await deleteProject(id);
     }
   };
 
@@ -149,13 +140,15 @@ export default function PortfolioPage() {
 
   return (
     <div className="space-y-6">
+      <Toaster position="top-right" />
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-heading font-bold text-white">Portfolio</h1>
           <p className="text-gray-400">Manage your project showcase</p>
         </div>
-        <Button onClick={handleAdd} leftIcon={<Plus size={18} />}>
+        <Button onClick={handleAdd} leftIcon={<Plus size={18} />} disabled={loading}>
           Add Project
         </Button>
       </div>
@@ -177,9 +170,24 @@ export default function PortfolioPage() {
         ))}
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </div>
+      )}
+
       {/* Projects Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredProjects.map((project, index) => (
+      {!loading && (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredProjects.length === 0 ? (
+            <div className="col-span-full">
+              <GlassCard className="text-center py-12">
+                <p className="text-gray-400">No projects found. Create your first project to get started.</p>
+              </GlassCard>
+            </div>
+          ) : (
+            filteredProjects.map((project, index) => (
           <motion.div
             key={project.id}
             initial={{ opacity: 0, y: 20 }}
@@ -284,8 +292,10 @@ export default function PortfolioPage() {
               </div>
             </GlassCard>
           </motion.div>
-        ))}
+        ))
+        )}
       </div>
+      )}
 
       {/* Modal */}
       <AnimatePresence>
@@ -456,11 +466,15 @@ export default function PortfolioPage() {
 
                 {/* Modal Footer */}
                 <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/10">
-                  <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
+                  <Button variant="secondary" onClick={() => setIsModalOpen(false)} disabled={isSaving}>
                     Cancel
                   </Button>
-                  <Button onClick={handleSave} leftIcon={<Save size={18} />}>
-                    Save Project
+                  <Button 
+                    onClick={handleSave} 
+                    leftIcon={isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                    disabled={isSaving}
+                  >
+                    {isSaving ? "Saving..." : "Save Project"}
                   </Button>
                 </div>
               </GlassCard>

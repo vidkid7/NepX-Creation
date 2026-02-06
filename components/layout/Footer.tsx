@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -45,7 +46,38 @@ const socialLinks = [
   { name: "YouTube", icon: Youtube, href: "#" },
 ];
 
+type ContactInfo = {
+  email: string;
+  phone: string;
+  address: string;
+};
+
 export default function Footer() {
+  const [contactInfo, setContactInfo] = useState<ContactInfo>({
+    email: "hello@nepxcreation.com",
+    phone: "+977 123 456 7890",
+    address: "Kathmandu, Nepal",
+  });
+
+  useEffect(() => {
+    async function fetchContactInfo() {
+      try {
+        const response = await fetch('/api/public/content/contact');
+        const data = await response.json();
+        if (data.success) {
+          setContactInfo({
+            email: data.data.email,
+            phone: data.data.phone,
+            address: data.data.address,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching contact info:', error);
+      }
+    }
+
+    fetchContactInfo();
+  }, []);
   return (
     <footer className="relative bg-black border-t border-white/5">
       {/* Gradient overlay */}
@@ -71,22 +103,22 @@ export default function Footer() {
             {/* Contact Info */}
             <div className="space-y-3">
               <a
-                href="mailto:hello@nepxcreation.com"
+                href={`mailto:${contactInfo.email}`}
                 className="flex items-center space-x-3 text-gray-400 hover:text-primary transition-colors group"
               >
                 <Mail size={18} className="group-hover:scale-110 transition-transform" />
-                <span>hello@nepxcreation.com</span>
+                <span>{contactInfo.email}</span>
               </a>
               <a
-                href="tel:+9771234567890"
+                href={`tel:${contactInfo.phone.replace(/\s/g, '')}`}
                 className="flex items-center space-x-3 text-gray-400 hover:text-primary transition-colors group"
               >
                 <Phone size={18} className="group-hover:scale-110 transition-transform" />
-                <span>+977 123 456 7890</span>
+                <span>{contactInfo.phone}</span>
               </a>
               <div className="flex items-start space-x-3 text-gray-400">
                 <MapPin size={18} className="mt-0.5 flex-shrink-0" />
-                <span>Kathmandu, Nepal</span>
+                <span>{contactInfo.address}</span>
               </div>
             </div>
           </div>

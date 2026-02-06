@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Target, Eye, Rocket, Users } from "lucide-react";
+import { Target, Eye, Rocket, Users, Loader2 } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import GlassCard from "@/components/ui/GlassCard";
 import FadeIn from "@/components/animations/FadeIn";
@@ -34,14 +35,61 @@ const values = [
   },
 ];
 
-const stats = [
-  { number: "100+", label: "Projects Completed" },
-  { number: "50+", label: "Global Clients" },
-  { number: "15+", label: "Team Experts" },
-  { number: "99%", label: "Client Satisfaction" },
-];
+type AboutContent = {
+  title: string;
+  subtitle: string;
+  description: string;
+  mission: string;
+  vision: string;
+  stats: Array<{ number: string; label: string }>;
+};
 
 export default function AboutSection() {
+  const [content, setContent] = useState<AboutContent>({
+    title: "Building the Future of",
+    subtitle: "Digital Innovation",
+    description: "At NepX Creation, we believe in the power of technology to transform businesses and create meaningful impact. Our team of passionate developers, designers, and digital strategists work together to deliver solutions that exceed expectations.",
+    mission: "To empower businesses with innovative digital solutions that drive growth, enhance efficiency, and create lasting value in an ever-evolving technological landscape.",
+    vision: "To be the leading digital innovation partner, recognized globally for delivering exceptional quality, creative excellence, and transformative technology solutions.",
+    stats: [
+      { number: "100+", label: "Projects Completed" },
+      { number: "50+", label: "Global Clients" },
+      { number: "15+", label: "Team Experts" },
+      { number: "99%", label: "Client Satisfaction" },
+    ],
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchContent() {
+      try {
+        const response = await fetch('/api/public/content/about');
+        const data = await response.json();
+        if (data.success) {
+          setContent(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching about content:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchContent();
+  }, []);
+
+  if (loading) {
+    return (
+      <section id="about" className="relative section-padding overflow-hidden">
+        <div className="container-custom mx-auto relative z-10">
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="about" className="relative section-padding overflow-hidden">
       {/* Background elements */}
@@ -61,25 +109,16 @@ export default function AboutSection() {
           <FadeIn direction="left">
             <div className="space-y-6">
               <h3 className="text-2xl md:text-3xl font-heading font-bold text-white">
-                Building the Future of{" "}
-                <span className="gradient-text">Digital Innovation</span>
+                {content.title}{" "}
+                <span className="gradient-text">{content.subtitle}</span>
               </h3>
               <p className="text-gray-400 leading-relaxed">
-                At NepX Creation, we believe in the power of technology to transform
-                businesses and create meaningful impact. Our team of passionate
-                developers, designers, and digital strategists work together to
-                deliver solutions that exceed expectations.
-              </p>
-              <p className="text-gray-400 leading-relaxed">
-                From custom software & mobile app development to stunning websites for 
-                every industry — schools, hospitals, hotels, real estate, law firms, 
-                NGOs, and more. We also provide intelligent automation, video production, 
-                and comprehensive digital marketing solutions.
+                {content.description}
               </p>
               
               {/* Stats grid */}
               <div className="grid grid-cols-2 gap-4 pt-6">
-                {stats.map((stat, index) => (
+                {content.stats.map((stat, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -137,9 +176,7 @@ export default function AboutSection() {
                     Our Mission
                   </h4>
                   <p className="text-gray-400 leading-relaxed">
-                    To empower businesses with innovative digital solutions that drive
-                    growth, enhance efficiency, and create lasting value in an
-                    ever-evolving technological landscape.
+                    {content.mission}
                   </p>
                 </div>
               </div>
@@ -157,9 +194,7 @@ export default function AboutSection() {
                     Our Vision
                   </h4>
                   <p className="text-gray-400 leading-relaxed">
-                    To be the leading digital innovation partner, recognized globally
-                    for delivering exceptional quality, creative excellence, and
-                    transformative technology solutions.
+                    {content.vision}
                   </p>
                 </div>
               </div>

@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Save, Globe, Palette, Search, Share2 } from "lucide-react";
+import { Save, Globe, Palette, Search, Share2, Loader2 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import { Input, Textarea } from "@/components/ui/Input";
+import { useSettings } from "@/hooks/useSettings";
+import toast, { Toaster } from "react-hot-toast";
 
 const tabs = [
   { id: "general", label: "General", icon: Globe },
@@ -17,6 +19,7 @@ const tabs = [
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("general");
   const [isSaving, setIsSaving] = useState(false);
+  const { settings, loading, updateMultipleSettings } = useSettings();
 
   // General settings
   const [generalSettings, setGeneralSettings] = useState({
@@ -55,10 +58,26 @@ export default function SettingsPage() {
     github: "",
   });
 
+  // Load settings from database
+  useEffect(() => {
+    if (settings.general) setGeneralSettings(settings.general);
+    if (settings.theme) setThemeSettings(settings.theme);
+    if (settings.seo) setSeoSettings(settings.seo);
+    if (settings.social) setSocialLinks(settings.social);
+  }, [settings]);
+
   const handleSave = async () => {
     setIsSaving(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSaving(false);
+    try {
+      await updateMultipleSettings({
+        general: generalSettings,
+        theme: themeSettings,
+        seo: seoSettings,
+        social: socialLinks,
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const colorPresets = [
@@ -71,34 +90,46 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
+      <Toaster position="top-right" />
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-heading font-bold text-white">Settings</h1>
           <p className="text-gray-400">Configure your website settings</p>
         </div>
-        <Button onClick={handleSave} isLoading={isSaving} leftIcon={<Save size={18} />}>
+        <Button onClick={handleSave} isLoading={isSaving} leftIcon={<Save size={18} />} disabled={loading}>
           Save Changes
         </Button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              activeTab === tab.id
-                ? "bg-primary/20 text-primary border border-primary/30"
-                : "text-gray-400 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <tab.icon size={16} />
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      {/* Loading State */}
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </div>
+      )}
+
+      {/* Content */}
+      {!loading && (
+        <>
+          {/* Tabs */}
+          <div className="flex gap-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === tab.id
+                    ? "bg-primary/20 text-primary border border-primary/30"
+                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <tab.icon size={16} />
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
       {/* General Settings */}
       {activeTab === "general" && (
@@ -397,6 +428,8 @@ export default function SettingsPage() {
             </div>
           </GlassCard>
         </motion.div>
+      )}
+        </>
       )}
     </div>
   );

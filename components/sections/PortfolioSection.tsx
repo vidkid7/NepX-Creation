@@ -1,73 +1,29 @@
 "use client";
 
-import { useState, useRef, MouseEvent } from "react";
+import { useState, useRef, MouseEvent, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
-import { ExternalLink, Github, Eye } from "lucide-react";
+import { ExternalLink, Github, Eye, Loader2 } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import FadeIn from "@/components/animations/FadeIn";
 
 const categories = ["All", "Web", "Mobile", "Software", "Marketing"];
 
-const projects = [
-  {
-    id: 1,
-    title: "E-Commerce Platform",
-    description: "Full-stack e-commerce solution with advanced inventory management and payment integration.",
-    image: "https://images.unsplash.com/photo-1661956602116-aa6865609028?w=800&auto=format&fit=crop",
-    category: "Web",
-    technologies: ["Next.js", "Node.js", "PostgreSQL", "Stripe"],
-    link: "#",
-  },
-  {
-    id: 2,
-    title: "Healthcare Mobile App",
-    description: "Patient management and telemedicine application with real-time video consultations.",
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop",
-    category: "Mobile",
-    technologies: ["React Native", "Firebase", "WebRTC"],
-    link: "#",
-  },
-  {
-    id: 3,
-    title: "Enterprise CRM System",
-    description: "Custom CRM with AI-powered analytics, automation workflows, and team collaboration tools.",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop",
-    category: "Software",
-    technologies: ["React", "Python", "TensorFlow", "AWS"],
-    link: "#",
-  },
-  {
-    id: 4,
-    title: "FinTech Dashboard",
-    description: "Real-time financial analytics dashboard with advanced charting and reporting features.",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
-    category: "Web",
-    technologies: ["Vue.js", "D3.js", "Node.js", "MongoDB"],
-    link: "#",
-  },
-  {
-    id: 5,
-    title: "Social Media Campaign",
-    description: "Comprehensive digital marketing campaign that increased brand engagement by 300%.",
-    image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&auto=format&fit=crop",
-    category: "Marketing",
-    technologies: ["Analytics", "SEO", "Content Strategy"],
-    link: "#",
-  },
-  {
-    id: 6,
-    title: "IoT Management Platform",
-    description: "Industrial IoT platform for monitoring and managing connected devices at scale.",
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop",
-    category: "Software",
-    technologies: ["React", "Node.js", "MQTT", "InfluxDB"],
-    link: "#",
-  },
-];
+type Project = {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  category: string;
+  technologies: string[];
+  link: string;
+  githubLink?: string;
+  active: boolean;
+  order: number;
+};
 
 // 3D Project Card with tilt effect
-function ProjectCard({ project }: { project: typeof projects[0] }) {
+function ProjectCard({ project }: { project: Project }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -236,6 +192,26 @@ function ProjectCard({ project }: { project: typeof projects[0] }) {
 
 export default function PortfolioSection() {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        const response = await fetch('/api/public/projects');
+        const data = await response.json();
+        if (data.success) {
+          setProjects(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProjects();
+  }, []);
 
   const filteredProjects =
     activeCategory === "All"
@@ -295,23 +271,38 @@ export default function PortfolioSection() {
           </div>
         </FadeIn>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          </div>
+        )}
+
         {/* Projects Grid */}
-        <motion.div layout className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project) => (
-              <motion.div
-                key={project.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-              >
-                <ProjectCard project={project} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+        {!loading && (
+          <motion.div layout className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence mode="popLayout">
+              {filteredProjects.length > 0 ? (
+                filteredProjects.map((project) => (
+                  <motion.div
+                    key={project.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ProjectCard project={project} />
+                  </motion.div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-20">
+                  <p className="text-gray-400">No projects available in this category.</p>
+                </div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
       </div>
     </section>
   );

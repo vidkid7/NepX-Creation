@@ -1,11 +1,29 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Button from "@/components/ui/Button";
 import FadeIn from "@/components/animations/FadeIn";
 
 export default function CTASection() {
+  const [contactEmail, setContactEmail] = useState("hello@nepxcreation.com");
+
+  useEffect(() => {
+    async function fetchContactInfo() {
+      try {
+        const response = await fetch('/api/public/content/contact');
+        const data = await response.json();
+        if (data.success && data.data.email) {
+          setContactEmail(data.data.email);
+        }
+      } catch (error) {
+        console.error('Error fetching contact info:', error);
+      }
+    }
+
+    fetchContactInfo();
+  }, []);
   return (
     <section className="relative section-padding overflow-hidden">
       {/* Background */}
@@ -106,7 +124,7 @@ export default function CTASection() {
               <Button
                 variant="outline"
                 size="lg"
-                onClick={() => window.open("mailto:hello@nepxcreation.com", "_blank")}
+                onClick={() => window.open(`mailto:${contactEmail}`, "_blank")}
               >
                 Schedule a Call
               </Button>

@@ -1,11 +1,48 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Script from "next/script";
 
+type HeroContent = {
+  badge: string;
+  title: string;
+  titleHighlight: string;
+  description: string;
+  stats: Array<{ value: string; label: string }>;
+};
+
 export default function HeroSection() {
+  const [content, setContent] = useState<HeroContent>({
+    badge: "Premium IT Solutions",
+    title: "We Build",
+    titleHighlight: "Digital Excellence",
+    description:
+      "Transform your vision into reality with custom software, mobile apps, stunning websites for any industry, automation, video production, and digital marketing solutions that drive business growth.",
+    stats: [
+      { value: "100+", label: "Projects Delivered" },
+      { value: "50+", label: "Happy Clients" },
+      { value: "5+", label: "Years Experience" },
+    ],
+  });
+
+  useEffect(() => {
+    async function fetchContent() {
+      try {
+        const response = await fetch('/api/public/content/hero');
+        const data = await response.json();
+        if (data.success) {
+          setContent(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching hero content:', error);
+      }
+    }
+
+    fetchContent();
+  }, []);
   return (
     <section
       id="home"
@@ -41,7 +78,7 @@ export default function HeroSection() {
               >
                 <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-gray-300">
                   <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  Premium IT Solutions
+                  {content.badge}
                 </span>
               </motion.div>
 
@@ -52,9 +89,9 @@ export default function HeroSection() {
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-heading font-bold leading-tight">
-                  <span className="text-white">We Build</span>
+                  <span className="text-white">{content.title}</span>
                   <br />
-                  <span className="gradient-text">Digital Excellence</span>
+                  <span className="gradient-text">{content.titleHighlight}</span>
                 </h1>
               </motion.div>
 
@@ -65,9 +102,7 @@ export default function HeroSection() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="text-base sm:text-lg md:text-xl text-gray-400 max-w-xl leading-relaxed"
               >
-                Transform your vision into reality with custom software, mobile apps,
-                stunning websites for any industry, automation, video production, and
-                digital marketing solutions that drive business growth.
+                {content.description}
               </motion.p>
 
               {/* CTA Buttons */}
@@ -102,11 +137,7 @@ export default function HeroSection() {
                 transition={{ duration: 0.5, delay: 0.4 }}
                 className="flex flex-wrap gap-6 sm:gap-8 pt-6 sm:pt-8 border-t border-white/10"
               >
-                {[
-                  { value: "100+", label: "Projects Delivered" },
-                  { value: "50+", label: "Happy Clients" },
-                  { value: "5+", label: "Years Experience" },
-                ].map((stat, index) => (
+                {content.stats.map((stat, index) => (
                   <div key={index} className="text-center sm:text-left">
                     <div className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold gradient-text">
                       {stat.value}
@@ -131,15 +162,18 @@ export default function HeroSection() {
               <div className="relative w-full h-full rounded-3xl overflow-hidden">
                 <Script
                   type="module"
-                  src="https://unpkg.com/@splinetool/viewer@1.12.46/build/spline-viewer.js"
-                  strategy="lazyOnload"
+                  src="https://unpkg.com/@splinetool/viewer@1.12.51/build/spline-viewer.js"
+                  strategy="afterInteractive"
                 />
                 <spline-viewer
-                  url="https://prod.spline.design/nDuvhS2MLQg-hXjT/scene.splinecode"
+                  url="https://prod.spline.design/oehLr0xvIb1uvWQm/scene.splinecode"
+                  loading-anim-type="spinner-small-dark"
                   style={{
                     width: "100%",
                     height: "100%",
                     borderRadius: "1.5rem",
+                    willChange: "transform",
+                    transform: "translateZ(0)",
                   }}
                 />
               </div>

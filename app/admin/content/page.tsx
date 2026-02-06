@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Save, RefreshCw } from "lucide-react";
+import { Save, RefreshCw, Loader2 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import { Input, Textarea } from "@/components/ui/Input";
+import { useContent } from "@/hooks/useContent";
+import toast, { Toaster } from "react-hot-toast";
 
 const tabs = [
   { id: "hero", label: "Hero Section" },
@@ -16,6 +18,8 @@ const tabs = [
 export default function ContentPage() {
   const [activeTab, setActiveTab] = useState("hero");
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const { getContent, updateContent } = useContent();
 
   // Hero content state
   const [heroContent, setHeroContent] = useState({
@@ -33,15 +37,20 @@ export default function ContentPage() {
 
   // About content state
   const [aboutContent, setAboutContent] = useState({
-    title: "Crafting Digital Excellence Since Day One",
+    title: "Building the Future of",
+    subtitle: "Digital Innovation",
     description:
-      "NepX Creation is a full-stack IT & digital solutions company dedicated to transforming businesses through innovative technology and design-first thinking.",
-    story:
       "At NepX Creation, we believe in the power of technology to transform businesses and create meaningful impact. Our team of passionate developers, designers, and digital strategists work together to deliver solutions that exceed expectations.",
     mission:
       "To empower businesses with innovative digital solutions that drive growth, enhance efficiency, and create lasting value in an ever-evolving technological landscape.",
     vision:
       "To be the leading digital innovation partner, recognized globally for delivering exceptional quality, creative excellence, and transformative technology solutions.",
+    stats: [
+      { number: "100+", label: "Projects Completed" },
+      { number: "50+", label: "Global Clients" },
+      { number: "15+", label: "Team Experts" },
+      { number: "99%", label: "Client Satisfaction" },
+    ],
   });
 
   // Contact content state
@@ -53,11 +62,46 @@ export default function ContentPage() {
     workingHoursSaturday: "10:00 AM - 4:00 PM",
   });
 
+  // Load content from database on mount
+  useEffect(() => {
+    async function loadContent() {
+      setIsLoading(true);
+      try {
+        const [hero, about, contact] = await Promise.all([
+          getContent('hero'),
+          getContent('about'),
+          getContent('contact'),
+        ]);
+
+        if (hero) setHeroContent(hero);
+        if (about) setAboutContent(about);
+        if (contact) setContactContent(contact);
+      } catch (error) {
+        console.error('Error loading content:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadContent();
+  }, [getContent]);
+
   const handleSave = async () => {
     setIsSaving(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSaving(false);
+    try {
+      // Save the content for the active tab
+      if (activeTab === 'hero') {
+        await updateContent('hero', heroContent);
+      } else if (activeTab === 'about') {
+        await updateContent('about', aboutContent);
+      } else if (activeTab === 'contact') {
+        await updateContent('contact', contactContent);
+      }
+    } catch (error) {
+      console.error('Error saving content:', error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const updateHeroStat = (index: number, field: "value" | "label", value: string) => {
@@ -68,33 +112,45 @@ export default function ContentPage() {
 
   return (
     <div className="space-y-6">
+      <Toaster position="top-right" />
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-heading font-bold text-white">Content Management</h1>
           <p className="text-gray-400">Edit the content displayed on your website</p>
         </div>
-        <Button onClick={handleSave} isLoading={isSaving} leftIcon={<Save size={18} />}>
+        <Button onClick={handleSave} isLoading={isSaving} leftIcon={<Save size={18} />} disabled={isLoading}>
           Save Changes
         </Button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 border-b border-white/10 pb-4">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              activeTab === tab.id
-                ? "bg-primary/20 text-primary border border-primary/30"
-                : "text-gray-400 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </div>
+      )}
+
+      {/* Content */}
+      {!isLoading && (
+        <>
+          {/* Tabs */}
+          <div className="flex gap-2 border-b border-white/10 pb-4">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === tab.id
+                    ? "bg-primary/20 text-primary border border-primary/30"
+                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
       {/* Hero Content */}
       {activeTab === "hero" && (
@@ -175,20 +231,25 @@ export default function ContentPage() {
               About Section Content
             </h2>
             <div className="space-y-4">
-              <Input
-                label="Section Title"
-                value={aboutContent.title}
-                onChange={(e) => setAboutContent({ ...aboutContent, title: e.target.value })}
-              />
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Input
+                  label="Title (First Part)"
+                  value={aboutContent.title}
+                  onChange={(e) => setAboutContent({ ...aboutContent, title: e.target.value })}
+                  placeholder="Building the Future of"
+                />
+                <Input
+                  label="Title (Highlighted)"
+                  value={aboutContent.subtitle}
+                  onChange={(e) => setAboutContent({ ...aboutContent, subtitle: e.target.value })}
+                  placeholder="Digital Innovation"
+                />
+              </div>
               <Textarea
-                label="Short Description"
+                label="Description"
                 value={aboutContent.description}
                 onChange={(e) => setAboutContent({ ...aboutContent, description: e.target.value })}
-              />
-              <Textarea
-                label="Company Story"
-                value={aboutContent.story}
-                onChange={(e) => setAboutContent({ ...aboutContent, story: e.target.value })}
+                placeholder="Company description..."
               />
             </div>
           </GlassCard>
@@ -202,12 +263,46 @@ export default function ContentPage() {
                 label="Mission Statement"
                 value={aboutContent.mission}
                 onChange={(e) => setAboutContent({ ...aboutContent, mission: e.target.value })}
+                placeholder="Our mission..."
               />
               <Textarea
                 label="Vision Statement"
                 value={aboutContent.vision}
                 onChange={(e) => setAboutContent({ ...aboutContent, vision: e.target.value })}
+                placeholder="Our vision..."
               />
+            </div>
+          </GlassCard>
+
+          <GlassCard>
+            <h2 className="text-lg font-heading font-semibold text-white mb-4">
+              Statistics
+            </h2>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {aboutContent.stats.map((stat, index) => (
+                <div key={index} className="space-y-2">
+                  <Input
+                    label={`Stat ${index + 1} Number`}
+                    value={stat.number}
+                    onChange={(e) => {
+                      const newStats = [...aboutContent.stats];
+                      newStats[index] = { ...newStats[index], number: e.target.value };
+                      setAboutContent({ ...aboutContent, stats: newStats });
+                    }}
+                    placeholder="100+"
+                  />
+                  <Input
+                    label={`Stat ${index + 1} Label`}
+                    value={stat.label}
+                    onChange={(e) => {
+                      const newStats = [...aboutContent.stats];
+                      newStats[index] = { ...newStats[index], label: e.target.value };
+                      setAboutContent({ ...aboutContent, stats: newStats });
+                    }}
+                    placeholder="Projects Completed"
+                  />
+                </div>
+              ))}
             </div>
           </GlassCard>
         </motion.div>
@@ -265,11 +360,13 @@ export default function ContentPage() {
         </motion.div>
       )}
 
-      {/* Preview hint */}
-      <div className="flex items-center justify-center gap-2 text-sm text-gray-500 pt-4">
-        <RefreshCw size={14} />
-        <span>Changes will reflect on the website after saving.</span>
-      </div>
+          {/* Preview hint */}
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-500 pt-4">
+            <RefreshCw size={14} />
+            <span>Changes will reflect on the website after saving.</span>
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -1,57 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Quote, Star, Loader2 } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import FadeIn from "@/components/animations/FadeIn";
 
-const testimonials = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    role: "CEO",
-    company: "TechStart Inc.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop",
-    quote:
-      "NepX Creation transformed our entire digital presence. Their attention to detail and innovative approach exceeded our expectations. The team delivered a stunning website that increased our conversions by 200%.",
-    rating: 5,
-  },
-  {
-    id: 2,
-    name: "Michael Chen",
-    role: "CTO",
-    company: "DataFlow Systems",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop",
-    quote:
-      "Working with NepX was an absolute pleasure. They built a complex enterprise system that streamlined our operations significantly. Their technical expertise and professionalism are unmatched.",
-    rating: 5,
-  },
-  {
-    id: 3,
-    name: "Emily Rodriguez",
-    role: "Marketing Director",
-    company: "GrowthHub",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&auto=format&fit=crop",
-    quote:
-      "The digital marketing campaign NepX created for us was phenomenal. Our social media engagement tripled, and we saw a 150% increase in qualified leads. Highly recommended!",
-    rating: 5,
-  },
-  {
-    id: 4,
-    name: "David Park",
-    role: "Founder",
-    company: "InnovateTech",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&auto=format&fit=crop",
-    quote:
-      "NepX Creation delivered our mobile app on time and beyond our expectations. The UI/UX design is beautiful, and the app performance is outstanding. They're now our go-to tech partner.",
-    rating: 5,
-  },
-];
+type Testimonial = {
+  id: string;
+  name: string;
+  role: string;
+  company: string;
+  image: string;
+  quote: string;
+  rating: number;
+  active: boolean;
+  order: number;
+};
 
 export default function TestimonialsSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchTestimonials() {
+      try {
+        const response = await fetch('/api/public/testimonials');
+        const data = await response.json();
+        if (data.success) {
+          setTestimonials(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching testimonials:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTestimonials();
+  }, []);
 
   const next = () => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
@@ -75,7 +64,20 @@ export default function TestimonialsSection() {
           description="Don't just take our word for it. Here's what our clients have to say about working with us."
         />
 
-        <div className="max-w-4xl mx-auto">
+        {loading && (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          </div>
+        )}
+
+        {!loading && testimonials.length === 0 && (
+          <div className="text-center py-20">
+            <p className="text-gray-400">No testimonials available at the moment.</p>
+          </div>
+        )}
+
+        {!loading && testimonials.length > 0 && (
+          <div className="max-w-4xl mx-auto">
           <FadeIn>
             <div className="relative">
               {/* Main Testimonial */}
@@ -184,6 +186,7 @@ export default function TestimonialsSection() {
             </div>
           </FadeIn>
         </div>
+        )}
       </div>
     </section>
   );

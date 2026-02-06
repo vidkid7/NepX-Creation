@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
@@ -20,11 +20,19 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 50);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -32,13 +40,17 @@ export default function Navbar() {
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-200",
         isScrolled
           ? "bg-black/80 backdrop-blur-xl border-b border-white/5"
           : "bg-transparent"
       )}
+      style={{
+        willChange: 'transform',
+        transform: 'translateZ(0)',
+      }}
     >
       <nav className="container-custom mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
@@ -46,7 +58,9 @@ export default function Navbar() {
           <Link href="/" className="flex items-center space-x-2 group">
             <motion.div
               whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
               className="relative"
+              style={{ willChange: 'transform' }}
             >
               <span className="text-2xl font-heading font-bold gradient-text">
                 NepX
@@ -58,6 +72,7 @@ export default function Navbar() {
                 className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-primary to-accent"
                 initial={{ width: 0 }}
                 whileHover={{ width: "100%" }}
+                transition={{ duration: 0.2 }}
                 transition={{ duration: 0.3 }}
               />
             </motion.div>

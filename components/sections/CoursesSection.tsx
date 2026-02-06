@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -18,22 +18,78 @@ import {
   GraduationCap,
   Phone,
   Mail,
+  Code,
+  Database,
+  Globe,
+  Smartphone,
+  Server,
+  Cloud,
+  Shield,
+  Brain,
+  Palette,
+  Terminal,
+  GitBranch,
+  Layers,
+  Cpu,
+  Network,
+  LineChart,
+  Loader2,
 } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import FadeIn from "@/components/animations/FadeIn";
 import {
-  courses,
   courseCategories,
   applicationProcess,
   classOptions,
-  Course,
 } from "@/lib/courses-data";
+
+// Icon mapping
+const iconMap: Record<string, any> = {
+  Code,
+  Database,
+  Globe,
+  Smartphone,
+  Server,
+  Cloud,
+  Shield,
+  Brain,
+  Palette,
+  Terminal,
+  GitBranch,
+  Layers,
+  Cpu,
+  Network,
+  LineChart,
+  BookOpen,
+};
+
+type Course = {
+  id: string;
+  title: string;
+  shortDescription: string;
+  category: string;
+  level: string;
+  duration: string;
+  projects: number;
+  mode: string[];
+  priceOnline: number;
+  priceOffline: number | null;
+  icon: string;
+  gradient: string;
+  curriculum: Array<{ title: string; topics: string[] }>;
+  tools: string[];
+  features: string[];
+  popular: boolean;
+  order: number;
+  active: boolean;
+};
 
 // Course Card Component with 3D effects
 function CourseCard({ course }: { course: Course }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const IconComponent = iconMap[course.icon] || BookOpen;
 
   return (
     <GlassCard tilt3D={true} className="h-full">
@@ -44,7 +100,7 @@ function CourseCard({ course }: { course: Course }) {
             whileHover={{ scale: 1.1, rotate: 5 }}
             className={`p-3 rounded-xl bg-gradient-to-br ${course.gradient}`}
           >
-            <course.icon className="w-6 h-6 text-white" />
+            <IconComponent className="w-6 h-6 text-white" />
           </motion.div>
           <div className="flex items-center gap-2">
             {course.popular && (
@@ -102,7 +158,7 @@ function CourseCard({ course }: { course: Course }) {
         {/* Price */}
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold gradient-text">
-            NPR {course.price.online.toLocaleString()}
+            NPR {course.priceOnline.toLocaleString()}
           </span>
           <span className="text-sm text-gray-500">/ Online</span>
         </div>
@@ -182,10 +238,15 @@ function CourseCard({ course }: { course: Course }) {
                     size="sm"
                     className="flex-1"
                     rightIcon={<ArrowRight className="w-4 h-4" />}
+                    onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
                   >
                     Enroll Now
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
+                  >
                     Learn More
                   </Button>
                 </div>
@@ -272,6 +333,26 @@ function ClassModeCard({ mode, data }: { mode: string; data: typeof classOptions
 export default function CoursesSection() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [showAll, setShowAll] = useState(false);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchCourses() {
+      try {
+        const response = await fetch('/api/public/courses');
+        const data = await response.json();
+        if (data.success) {
+          setCourses(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchCourses();
+  }, []);
 
   const filteredCourses =
     activeCategory === "All"
@@ -342,23 +423,38 @@ export default function CoursesSection() {
           </div>
         </FadeIn>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          </div>
+        )}
+
         {/* Courses Grid */}
-        <motion.div layout className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          <AnimatePresence mode="popLayout">
-            {displayedCourses.map((course) => (
-              <motion.div
-                key={course.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-              >
-                <CourseCard course={course} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+        {!loading && (
+          <motion.div layout className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            <AnimatePresence mode="popLayout">
+              {displayedCourses.length > 0 ? (
+                displayedCourses.map((course) => (
+                  <motion.div
+                    key={course.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <CourseCard course={course} />
+                  </motion.div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-20">
+                  <p className="text-gray-400">No courses available in this category.</p>
+                </div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
 
         {/* Show More Button */}
         {filteredCourses.length > 6 && (
@@ -469,13 +565,13 @@ export default function CoursesSection() {
 
               {/* Contact Info */}
               <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
-                <a href="tel:+9771234567890" className="flex items-center gap-2 hover:text-primary transition-colors">
+                <a href="tel:+9779762579766" className="flex items-center gap-2 hover:text-primary transition-colors">
                   <Phone className="w-4 h-4" />
-                  +977 123 456 7890
+                  +977 976-2579766
                 </a>
-                <a href="mailto:training@nepxcreation.com" className="flex items-center gap-2 hover:text-primary transition-colors">
+                <a href="mailto:nepxcreative@gmail.com" className="flex items-center gap-2 hover:text-primary transition-colors">
                   <Mail className="w-4 h-4" />
-                  training@nepxcreation.com
+                  nepxcreative@gmail.com
                 </a>
               </div>
             </div>

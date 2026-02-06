@@ -4,6 +4,7 @@ declare namespace JSX {
       React.HTMLAttributes<HTMLElement> & {
         url?: string;
         "loading-anim"?: boolean;
+        "loading-anim-type"?: string;
       },
       HTMLElement
     >;

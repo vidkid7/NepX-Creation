@@ -1,38 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Send, CheckCircle } from "lucide-react";
+import { Mail, Phone, MapPin, Send, CheckCircle, Loader2 } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import { Input, Textarea } from "@/components/ui/Input";
 import FadeIn from "@/components/animations/FadeIn";
 
-const contactInfo = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: "hello@nepxcreation.com",
-    href: "mailto:hello@nepxcreation.com",
-  },
-  {
-    icon: Phone,
-    label: "Phone",
-    value: "+977 123 456 7890",
-    href: "tel:+9771234567890",
-  },
-  {
-    icon: MapPin,
-    label: "Location",
-    value: "Kathmandu, Nepal",
-    href: "#",
-  },
-];
+type ContactContent = {
+  email: string;
+  phone: string;
+  address: string;
+  workingHoursWeekday?: string;
+  workingHoursSaturday?: string;
+};
 
 export default function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [contactContent, setContactContent] = useState<ContactContent>({
+    email: "hello@nepxcreation.com",
+    phone: "+977 123 456 7890",
+    address: "Kathmandu, Nepal",
+    workingHoursWeekday: "9:00 AM - 6:00 PM",
+    workingHoursSaturday: "10:00 AM - 4:00 PM",
+  });
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -40,19 +35,75 @@ export default function ContactSection() {
     message: "",
   });
 
+  useEffect(() => {
+    async function fetchContactInfo() {
+      try {
+        const response = await fetch('/api/public/content/contact');
+        const data = await response.json();
+        if (data.success) {
+          setContactContent(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching contact info:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchContactInfo();
+  }, []);
+
+  const contactInfo = [
+    {
+      icon: Mail,
+      label: "Email",
+      value: contactContent.email,
+      href: `mailto:${contactContent.email}`,
+    },
+    {
+      icon: Phone,
+      label: "Phone",
+      value: contactContent.phone,
+      href: `tel:${contactContent.phone.replace(/\s/g, '')}`,
+    },
+    {
+      icon: MapPin,
+      label: "Location",
+      value: contactContent.address,
+      href: "#",
+    },
+  ];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    setFormData({ name: "", email: "", subject: "", message: "" });
+      const data = await response.json();
 
-    // Reset success message after 5 seconds
-    setTimeout(() => setIsSubmitted(false), 5000);
+      if (data.success) {
+        setIsSubmitted(true);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+        
+        // Reset success message after 5 seconds
+        setTimeout(() => setIsSubmitted(false), 5000);
+      } else {
+        alert('Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -122,11 +173,11 @@ export default function ContactSection() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-500">Monday - Friday</span>
-                    <span className="text-white">9:00 AM - 6:00 PM</span>
+                    <span className="text-white">{contactContent.workingHoursWeekday || "9:00 AM - 6:00 PM"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-500">Saturday</span>
-                    <span className="text-white">10:00 AM - 4:00 PM</span>
+                    <span className="text-white">{contactContent.workingHoursSaturday || "10:00 AM - 4:00 PM"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-500">Sunday</span>

@@ -15,10 +15,13 @@ import {
   Lightbulb,
   X,
   Save,
+  Loader2,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import { Input, Textarea } from "@/components/ui/Input";
+import { useServices } from "@/hooks/useServices";
+import toast, { Toaster } from "react-hot-toast";
 
 const iconOptions = [
   { name: "Code", icon: Code },
@@ -38,41 +41,10 @@ const gradientOptions = [
   { name: "Violet Purple", value: "from-violet-500 to-purple-500" },
 ];
 
-// Mock data - in production, fetch from API
-const initialServices = [
-  {
-    id: "1",
-    title: "Custom Software Development",
-    description: "From simple applications to complex enterprise systems, we build tailored software solutions.",
-    icon: "Code",
-    gradient: "from-blue-500 to-cyan-500",
-    features: ["Web Applications", "Mobile Apps", "Enterprise Systems", "APIs & Integrations"],
-    active: true,
-  },
-  {
-    id: "2",
-    title: "Website Design & Development",
-    description: "Stunning, responsive websites that captivate visitors and convert them into customers.",
-    icon: "Globe",
-    gradient: "from-purple-500 to-pink-500",
-    features: ["Custom Websites", "E-commerce", "Landing Pages", "Web Portals"],
-    active: true,
-  },
-  {
-    id: "3",
-    title: "Automation Solutions",
-    description: "Streamline your operations with intelligent automation and AI integration.",
-    icon: "Zap",
-    gradient: "from-amber-500 to-orange-500",
-    features: ["Workflow Automation", "Chatbots", "Process Optimization", "AI Integration"],
-    active: true,
-  },
-];
-
 export default function ServicesPage() {
-  const [services, setServices] = useState(initialServices);
+  const { services, loading, createService, updateService, deleteService } = useServices();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingService, setEditingService] = useState<typeof initialServices[0] | null>(null);
+  const [editingService, setEditingService] = useState<typeof services[0] | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -81,8 +53,9 @@ export default function ServicesPage() {
     features: [""],
     active: true,
   });
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleEdit = (service: typeof initialServices[0]) => {
+  const handleEdit = (service: typeof services[0]) => {
     setEditingService(service);
     setFormData({
       title: service.title,
@@ -108,20 +81,45 @@ export default function ServicesPage() {
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
-    if (editingService) {
-      setServices(services.map((s) =>
-        s.id === editingService.id ? { ...s, ...formData } : s
-      ));
-    } else {
-      setServices([...services, { id: Date.now().toString(), ...formData }]);
+  const handleSave = async () => {
+    // Validate form
+    if (!formData.title.trim()) {
+      toast.error("Title is required");
+      return;
     }
-    setIsModalOpen(false);
+    if (!formData.description.trim()) {
+      toast.error("Description is required");
+      return;
+    }
+    if (formData.features.filter(f => f.trim()).length === 0) {
+      toast.error("At least one feature is required");
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      // Filter out empty features
+      const cleanedData = {
+        ...formData,
+        features: formData.features.filter(f => f.trim()),
+      };
+
+      if (editingService) {
+        await updateService(editingService.id, cleanedData);
+      } else {
+        await createService(cleanedData);
+      }
+      
+      setIsModalOpen(false);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this service?")) {
-      setServices(services.filter((s) => s.id !== id));
+      await deleteService(id);
     }
   };
 
@@ -149,29 +147,44 @@ export default function ServicesPage() {
 
   return (
     <div className="space-y-6">
+      <Toaster position="top-right" />
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-heading font-bold text-white">Services</h1>
           <p className="text-gray-400">Manage the services displayed on your website</p>
         </div>
-        <Button onClick={handleAdd} leftIcon={<Plus size={18} />}>
+        <Button onClick={handleAdd} leftIcon={<Plus size={18} />} disabled={loading}>
           Add Service
         </Button>
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </div>
+      )}
+
       {/* Services Grid */}
-      <div className="grid gap-4">
-        {services.map((service, index) => {
-          const IconComponent = getIcon(service.icon);
-          return (
-            <motion.div
-              key={service.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <GlassCard className="flex items-start gap-4">
+      {!loading && (
+        <div className="grid gap-4">
+          {services.length === 0 ? (
+            <GlassCard className="text-center py-12">
+              <p className="text-gray-400">No services found. Create your first service to get started.</p>
+            </GlassCard>
+          ) : (
+            services.map((service, index) => {
+              const IconComponent = getIcon(service.icon);
+              return (
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <GlassCard className="flex items-start gap-4">
                 {/* Drag Handle */}
                 <button className="p-2 text-gray-500 hover:text-gray-300 cursor-grab">
                   <GripVertical size={20} />
@@ -232,11 +245,13 @@ export default function ServicesPage() {
                     <Trash2 size={16} />
                   </button>
                 </div>
-              </GlassCard>
-            </motion.div>
-          );
-        })}
-      </div>
+                </GlassCard>
+              </motion.div>
+            );
+          })
+          )}
+        </div>
+      )}
 
       {/* Modal */}
       <AnimatePresence>
@@ -370,11 +385,15 @@ export default function ServicesPage() {
 
                 {/* Modal Footer */}
                 <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/10">
-                  <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
+                  <Button variant="secondary" onClick={() => setIsModalOpen(false)} disabled={isSaving}>
                     Cancel
                   </Button>
-                  <Button onClick={handleSave} leftIcon={<Save size={18} />}>
-                    Save Service
+                  <Button 
+                    onClick={handleSave} 
+                    leftIcon={isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                    disabled={isSaving}
+                  >
+                    {isSaving ? "Saving..." : "Save Service"}
                   </Button>
                 </div>
               </GlassCard>

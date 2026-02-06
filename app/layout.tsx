@@ -57,6 +57,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
+      <head>
+        {/* Performance hints */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://unpkg.com" />
+        <link rel="preconnect" href="https://prod.spline.design" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+      </head>
       <body className="bg-background text-foreground antialiased">
         <SessionProvider>{children}</SessionProvider>
       </body>

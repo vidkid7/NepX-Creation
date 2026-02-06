@@ -44,13 +44,31 @@ async function main() {
 
   const aboutContent = await prisma.siteContent.upsert({
     where: { section: "about" },
-    update: {},
+    update: {
+      content: {
+        title: "Building the Future of",
+        subtitle: "Digital Innovation",
+        description:
+          "At NepX Creation, we believe in the power of technology to transform businesses and create meaningful impact. Our team of passionate developers, designers, and digital strategists work together to deliver solutions that exceed expectations.",
+        mission:
+          "To empower businesses with innovative digital solutions that drive growth, enhance efficiency, and create lasting value in an ever-evolving technological landscape.",
+        vision:
+          "To be the leading digital innovation partner, recognized globally for delivering exceptional quality, creative excellence, and transformative technology solutions.",
+        stats: [
+          { number: "100+", label: "Projects Completed" },
+          { number: "50+", label: "Global Clients" },
+          { number: "15+", label: "Team Experts" },
+          { number: "99%", label: "Client Satisfaction" },
+        ],
+      },
+    },
     create: {
       section: "about",
       content: {
-        title: "Crafting Digital Excellence Since Day One",
+        title: "Building the Future of",
+        subtitle: "Digital Innovation",
         description:
-          "NepX Creation is a full-stack IT & digital solutions company dedicated to transforming businesses through innovative technology and design-first thinking.",
+          "At NepX Creation, we believe in the power of technology to transform businesses and create meaningful impact. Our team of passionate developers, designers, and digital strategists work together to deliver solutions that exceed expectations.",
         mission:
           "To empower businesses with innovative digital solutions that drive growth, enhance efficiency, and create lasting value in an ever-evolving technological landscape.",
         vision:
@@ -65,6 +83,241 @@ async function main() {
     },
   });
   console.log("✅ Created about content");
+
+  const contactContent = await prisma.siteContent.upsert({
+    where: { section: "contact" },
+    update: {
+      content: {
+        email: "nepxcreative@gmail.com",
+        phone: "+977 976-2579766",
+        address: "Kathmandu, Nepal",
+        workingHoursWeekday: "9:00 AM - 6:00 PM",
+        workingHoursSaturday: "10:00 AM - 4:00 PM",
+      },
+    },
+    create: {
+      section: "contact",
+      content: {
+        email: "nepxcreative@gmail.com",
+        phone: "+977 976-2579766",
+        address: "Kathmandu, Nepal",
+        workingHoursWeekday: "9:00 AM - 6:00 PM",
+        workingHoursSaturday: "10:00 AM - 4:00 PM",
+      },
+    },
+  });
+  console.log("✅ Created contact content");
+
+  // Create courses
+  const coursesData = [
+    {
+      id: "full-stack-web-development",
+      title: "Full Stack Web Development",
+      shortDescription: "Master modern web development with React, Node.js, and MongoDB. Build complete web applications from frontend to backend.",
+      category: "Web Development",
+      level: "Intermediate",
+      duration: "6 Months",
+      projects: 8,
+      mode: ["Online", "Offline"],
+      priceOnline: 45000,
+      priceOffline: 55000,
+      icon: "Code",
+      gradient: "from-blue-500 to-cyan-500",
+      curriculum: [
+        {
+          title: "Frontend Development",
+          topics: ["HTML5 & CSS3", "JavaScript ES6+", "React.js", "State Management", "Responsive Design"]
+        },
+        {
+          title: "Backend Development",
+          topics: ["Node.js", "Express.js", "RESTful APIs", "Authentication", "Database Integration"]
+        },
+        {
+          title: "Database & Deployment",
+          topics: ["MongoDB", "Database Design", "Cloud Deployment", "Version Control", "Testing"]
+        }
+      ],
+      tools: ["React", "Node.js", "MongoDB", "Express", "Git", "VS Code"],
+      features: ["Live Projects", "Industry Mentorship", "Job Placement Support", "Certificate", "Lifetime Access"],
+      popular: true,
+      order: 1,
+      active: true,
+    },
+    {
+      id: "mobile-app-development",
+      title: "Mobile App Development",
+      shortDescription: "Create cross-platform mobile apps using React Native and Flutter. Deploy to both iOS and Android stores.",
+      category: "Mobile Development",
+      level: "Intermediate",
+      duration: "5 Months",
+      projects: 6,
+      mode: ["Online", "Offline"],
+      priceOnline: 40000,
+      priceOffline: 50000,
+      icon: "Smartphone",
+      gradient: "from-purple-500 to-pink-500",
+      curriculum: [
+        {
+          title: "React Native Fundamentals",
+          topics: ["React Native Setup", "Components", "Navigation", "State Management", "Native Modules"]
+        },
+        {
+          title: "Flutter Development",
+          topics: ["Dart Language", "Flutter Widgets", "State Management", "Animations", "Platform Integration"]
+        },
+        {
+          title: "App Store Deployment",
+          topics: ["iOS App Store", "Google Play Store", "App Optimization", "Testing", "Analytics"]
+        }
+      ],
+      tools: ["React Native", "Flutter", "Dart", "Xcode", "Android Studio", "Firebase"],
+      features: ["Real Apps", "Store Deployment", "Cross-platform", "Certificate", "Job Support"],
+      popular: false,
+      order: 2,
+      active: true,
+    },
+    {
+      id: "data-science-analytics",
+      title: "Data Science & Analytics",
+      shortDescription: "Learn Python, machine learning, and data visualization. Become a data scientist with hands-on projects.",
+      category: "AI & ML",
+      level: "Beginner",
+      duration: "4 Months",
+      projects: 5,
+      mode: ["Online"],
+      priceOnline: 35000,
+      priceOffline: null,
+      icon: "LineChart",
+      gradient: "from-green-500 to-emerald-500",
+      curriculum: [
+        {
+          title: "Python for Data Science",
+          topics: ["Python Basics", "NumPy", "Pandas", "Data Cleaning", "Data Manipulation"]
+        },
+        {
+          title: "Machine Learning",
+          topics: ["Supervised Learning", "Unsupervised Learning", "Model Evaluation", "Feature Engineering", "Deep Learning"]
+        },
+        {
+          title: "Data Visualization",
+          topics: ["Matplotlib", "Seaborn", "Plotly", "Dashboard Creation", "Storytelling with Data"]
+        }
+      ],
+      tools: ["Python", "Jupyter", "Pandas", "Scikit-learn", "TensorFlow", "Tableau"],
+      features: ["Real Datasets", "Industry Projects", "Portfolio Building", "Certificate", "Career Guidance"],
+      popular: true,
+      order: 3,
+      active: true,
+    },
+    {
+      id: "cybersecurity-fundamentals",
+      title: "Cybersecurity Fundamentals",
+      shortDescription: "Master cybersecurity concepts, ethical hacking, and network security. Protect digital assets effectively.",
+      category: "Cybersecurity",
+      level: "Intermediate",
+      duration: "4 Months",
+      projects: 4,
+      mode: ["Online", "Offline"],
+      priceOnline: 38000,
+      priceOffline: 48000,
+      icon: "Shield",
+      gradient: "from-red-500 to-orange-500",
+      curriculum: [
+        {
+          title: "Security Fundamentals",
+          topics: ["Network Security", "Cryptography", "Risk Assessment", "Security Policies", "Compliance"]
+        },
+        {
+          title: "Ethical Hacking",
+          topics: ["Penetration Testing", "Vulnerability Assessment", "Social Engineering", "Web Security", "Wireless Security"]
+        },
+        {
+          title: "Incident Response",
+          topics: ["Forensics", "Malware Analysis", "Incident Handling", "Recovery", "Documentation"]
+        }
+      ],
+      tools: ["Kali Linux", "Wireshark", "Metasploit", "Nmap", "Burp Suite", "OWASP ZAP"],
+      features: ["Hands-on Labs", "Real Scenarios", "Industry Certification Prep", "Certificate", "Job Placement"],
+      popular: false,
+      order: 4,
+      active: true,
+    },
+    {
+      id: "cloud-computing-aws",
+      title: "Cloud Computing with AWS",
+      shortDescription: "Master Amazon Web Services (AWS) cloud platform. Learn to deploy, manage, and scale applications in the cloud.",
+      category: "Cloud & DevOps",
+      level: "Intermediate",
+      duration: "3 Months",
+      projects: 4,
+      mode: ["Online"],
+      priceOnline: 32000,
+      priceOffline: null,
+      icon: "Cloud",
+      gradient: "from-orange-500 to-yellow-500",
+      curriculum: [
+        {
+          title: "AWS Fundamentals",
+          topics: ["AWS Console", "EC2", "S3", "VPC", "IAM", "CloudWatch"]
+        },
+        {
+          title: "Advanced Services",
+          topics: ["Lambda", "API Gateway", "RDS", "DynamoDB", "CloudFormation", "ECS"]
+        },
+        {
+          title: "DevOps & Deployment",
+          topics: ["CI/CD Pipelines", "Docker", "Kubernetes", "Monitoring", "Security Best Practices"]
+        }
+      ],
+      tools: ["AWS Console", "AWS CLI", "Docker", "Kubernetes", "Terraform", "Jenkins"],
+      features: ["AWS Credits", "Real Projects", "AWS Certification Prep", "Certificate", "Industry Mentorship"],
+      popular: false,
+      order: 5,
+      active: true,
+    },
+    {
+      id: "database-administration",
+      title: "Database Administration",
+      shortDescription: "Master database design, administration, and optimization. Work with SQL, NoSQL, and cloud databases.",
+      category: "Database",
+      level: "Intermediate",
+      duration: "3 Months",
+      projects: 3,
+      mode: ["Online", "Offline"],
+      priceOnline: 28000,
+      priceOffline: 35000,
+      icon: "Database",
+      gradient: "from-indigo-500 to-purple-500",
+      curriculum: [
+        {
+          title: "SQL Databases",
+          topics: ["MySQL", "PostgreSQL", "Database Design", "Indexing", "Query Optimization"]
+        },
+        {
+          title: "NoSQL Databases",
+          topics: ["MongoDB", "Redis", "Cassandra", "Document Stores", "Key-Value Stores"]
+        },
+        {
+          title: "Database Administration",
+          topics: ["Backup & Recovery", "Performance Tuning", "Security", "Monitoring", "Cloud Databases"]
+        }
+      ],
+      tools: ["MySQL", "PostgreSQL", "MongoDB", "Redis", "AWS RDS", "MongoDB Atlas"],
+      features: ["Real Database Projects", "Performance Optimization", "Industry Best Practices", "Certificate", "Job Support"],
+      popular: false,
+      order: 6,
+      active: true,
+    }
+  ];
+
+  for (const courseData of coursesData) {
+    await prisma.course.upsert({
+      where: { id: courseData.id },
+      update: courseData,
+      create: courseData,
+    });
+  }
+  console.log("✅ Created courses");
 
   // Create services
   const services = [
@@ -305,8 +558,8 @@ async function main() {
     {
       key: "contact",
       value: {
-        email: "hello@nepxcreation.com",
-        phone: "+977 123 456 7890",
+        email: "nepxcreative@gmail.com",
+        phone: "+977 981-4900519",
         address: "Kathmandu, Nepal",
         workingHours: {
           weekdays: "9:00 AM - 6:00 PM",

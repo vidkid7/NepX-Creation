@@ -3,49 +3,17 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { Plus, Pencil, Trash2, Star, X, Save } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, X, Save, Loader2 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import { Input, Textarea } from "@/components/ui/Input";
-
-// Mock data
-const initialTestimonials = [
-  {
-    id: "1",
-    name: "Sarah Johnson",
-    role: "CEO",
-    company: "TechStart Inc.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop",
-    quote: "NepX Creation transformed our entire digital presence. Their attention to detail and innovative approach exceeded our expectations.",
-    rating: 5,
-    active: true,
-  },
-  {
-    id: "2",
-    name: "Michael Chen",
-    role: "CTO",
-    company: "DataFlow Systems",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop",
-    quote: "Working with NepX was an absolute pleasure. They built a complex enterprise system that streamlined our operations significantly.",
-    rating: 5,
-    active: true,
-  },
-  {
-    id: "3",
-    name: "Emily Rodriguez",
-    role: "Marketing Director",
-    company: "GrowthHub",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&auto=format&fit=crop",
-    quote: "The digital marketing campaign NepX created for us was phenomenal. Our social media engagement tripled!",
-    rating: 5,
-    active: true,
-  },
-];
+import { useTestimonials } from "@/hooks/useTestimonials";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function TestimonialsPage() {
-  const [testimonials, setTestimonials] = useState(initialTestimonials);
+  const { testimonials, loading, createTestimonial, updateTestimonial, deleteTestimonial } = useTestimonials();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingTestimonial, setEditingTestimonial] = useState<typeof initialTestimonials[0] | null>(null);
+  const [editingTestimonial, setEditingTestimonial] = useState<typeof testimonials[0] | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     role: "",
@@ -55,14 +23,15 @@ export default function TestimonialsPage() {
     rating: 5,
     active: true,
   });
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleEdit = (testimonial: typeof initialTestimonials[0]) => {
+  const handleEdit = (testimonial: typeof testimonials[0]) => {
     setEditingTestimonial(testimonial);
     setFormData({
       name: testimonial.name,
       role: testimonial.role,
       company: testimonial.company,
-      image: testimonial.image,
+      image: testimonial.image || "",
       quote: testimonial.quote,
       rating: testimonial.rating,
       active: testimonial.active,
@@ -84,39 +53,78 @@ export default function TestimonialsPage() {
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
-    if (editingTestimonial) {
-      setTestimonials(testimonials.map((t) =>
-        t.id === editingTestimonial.id ? { ...t, ...formData } : t
-      ));
-    } else {
-      setTestimonials([...testimonials, { id: Date.now().toString(), ...formData }]);
+  const handleSave = async () => {
+    if (!formData.name.trim()) {
+      toast.error("Name is required");
+      return;
     }
-    setIsModalOpen(false);
+    if (!formData.role.trim()) {
+      toast.error("Role is required");
+      return;
+    }
+    if (!formData.company.trim()) {
+      toast.error("Company is required");
+      return;
+    }
+    if (!formData.quote.trim()) {
+      toast.error("Quote is required");
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      if (editingTestimonial) {
+        await updateTestimonial(editingTestimonial.id, formData);
+      } else {
+        await createTestimonial(formData);
+      }
+      
+      setIsModalOpen(false);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this testimonial?")) {
-      setTestimonials(testimonials.filter((t) => t.id !== id));
+      await deleteTestimonial(id);
     }
   };
 
   return (
     <div className="space-y-6">
+      <Toaster position="top-right" />
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-heading font-bold text-white">Testimonials</h1>
           <p className="text-gray-400">Manage client testimonials and reviews</p>
         </div>
-        <Button onClick={handleAdd} leftIcon={<Plus size={18} />}>
+        <Button onClick={handleAdd} leftIcon={<Plus size={18} />} disabled={loading}>
           Add Testimonial
         </Button>
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </div>
+      )}
+
       {/* Testimonials Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {testimonials.map((testimonial, index) => (
+      {!loading && (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {testimonials.length === 0 ? (
+            <div className="col-span-full">
+              <GlassCard className="text-center py-12">
+                <p className="text-gray-400">No testimonials found. Create your first testimonial to get started.</p>
+              </GlassCard>
+            </div>
+          ) : (
+            testimonials.map((testimonial, index) => (
           <motion.div
             key={testimonial.id}
             initial={{ opacity: 0, y: 20 }}
@@ -190,8 +198,10 @@ export default function TestimonialsPage() {
               </div>
             </GlassCard>
           </motion.div>
-        ))}
+        ))
+        )}
       </div>
+      )}
 
       {/* Modal */}
       <AnimatePresence>
@@ -303,11 +313,15 @@ export default function TestimonialsPage() {
 
                 {/* Modal Footer */}
                 <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/10">
-                  <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
+                  <Button variant="secondary" onClick={() => setIsModalOpen(false)} disabled={isSaving}>
                     Cancel
                   </Button>
-                  <Button onClick={handleSave} leftIcon={<Save size={18} />}>
-                    Save Testimonial
+                  <Button 
+                    onClick={handleSave} 
+                    leftIcon={isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                    disabled={isSaving}
+                  >
+                    {isSaving ? "Saving..." : "Save Testimonial"}
                   </Button>
                 </div>
               </GlassCard>

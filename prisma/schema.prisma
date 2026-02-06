@@ -54,7 +54,7 @@ model Project {
   category     String
   technologies Json
   link         String?
-  github       String?
+  githubLink   String?
   featured     Boolean  @default(false)
   order        Int      @default(0)
   active       Boolean  @default(true)
@@ -80,6 +80,8 @@ model Technology {
   id        String   @id @default(cuid())
   name      String
   category  String
+  icon      String   @default("🔧")
+  expertise Int      @default(80)
   color     String
   order     Int      @default(0)
   active    Boolean  @default(true)
@@ -103,4 +105,27 @@ model ContactSubmission {
   message   String   @db.Text
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+model Course {
+  id               String   @id @default(cuid())
+  title            String
+  shortDescription String   @db.Text
+  category         String
+  level            String
+  duration         String
+  projects         Int
+  mode             Json     // Array of strings: ["Online", "Offline"]
+  priceOnline      Int
+  priceOffline     Int?
+  icon             String   @default("BookOpen")
+  gradient         String   @default("from-blue-500 to-cyan-500")
+  curriculum       Json     // Array of curriculum modules
+  tools            Json     // Array of tool names
+  features         Json     // Array of feature strings
+  popular          Boolean  @default(false)
+  order            Int      @default(0)
+  active           Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }

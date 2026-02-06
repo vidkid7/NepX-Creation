@@ -2,53 +2,15 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Clock, Trash2, Eye, X, Reply, CheckCircle } from "lucide-react";
+import { Mail, Clock, Trash2, Eye, X, Reply, CheckCircle, Loader2 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
-
-// Mock data
-const initialMessages = [
-  {
-    id: "1",
-    name: "John Smith",
-    email: "john@example.com",
-    subject: "Website Development Inquiry",
-    message: "Hello, I'm interested in getting a custom website developed for my business. We're a small e-commerce company looking to modernize our online presence. Could you please provide more information about your services and pricing?",
-    read: false,
-    createdAt: "2024-01-15T10:30:00Z",
-  },
-  {
-    id: "2",
-    name: "Lisa Wong",
-    email: "lisa.wong@company.com",
-    subject: "Mobile App Development Quote",
-    message: "Hi there! Our company is planning to develop a mobile app for both iOS and Android. We'd like to schedule a consultation to discuss our requirements and get a quote. Please let me know your availability.",
-    read: true,
-    createdAt: "2024-01-14T15:45:00Z",
-  },
-  {
-    id: "3",
-    name: "David Miller",
-    email: "david@startup.io",
-    subject: "Partnership Opportunity",
-    message: "I came across your portfolio and was very impressed with your work. I'm the founder of a tech startup and we're looking for a development partner for our upcoming projects. Would love to discuss potential collaboration.",
-    read: false,
-    createdAt: "2024-01-13T09:15:00Z",
-  },
-  {
-    id: "4",
-    name: "Sarah Brown",
-    email: "sarah.b@business.net",
-    subject: "SEO and Marketing Services",
-    message: "We're interested in your digital marketing services, specifically SEO and social media management. Our current website traffic is low and we need help improving our online visibility. Can we schedule a call?",
-    read: true,
-    createdAt: "2024-01-12T14:00:00Z",
-  },
-];
+import { useMessages } from "@/hooks/useMessages";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function MessagesPage() {
-  const [messages, setMessages] = useState(initialMessages);
-  const [selectedMessage, setSelectedMessage] = useState<typeof initialMessages[0] | null>(null);
+  const { messages, loading, markAsRead, markAsUnread, deleteMessage, refetch } = useMessages();
+  const [selectedMessage, setSelectedMessage] = useState<typeof messages[0] | null>(null);
   const [filter, setFilter] = useState<"all" | "unread" | "read">("all");
 
   const filteredMessages = messages.filter((msg) => {
@@ -59,28 +21,24 @@ export default function MessagesPage() {
 
   const unreadCount = messages.filter((m) => !m.read).length;
 
-  const openMessage = (message: typeof initialMessages[0]) => {
+  const openMessage = async (message: typeof messages[0]) => {
     setSelectedMessage(message);
     if (!message.read) {
-      setMessages(messages.map((m) =>
-        m.id === message.id ? { ...m, read: true } : m
-      ));
+      await markAsRead(message.id);
     }
   };
 
-  const deleteMessage = (id: string) => {
+  const handleDeleteMessage = async (id: string) => {
     if (confirm("Are you sure you want to delete this message?")) {
-      setMessages(messages.filter((m) => m.id !== id));
+      await deleteMessage(id);
       if (selectedMessage?.id === id) {
         setSelectedMessage(null);
       }
     }
   };
 
-  const markAsUnread = (id: string) => {
-    setMessages(messages.map((m) =>
-      m.id === id ? { ...m, read: false } : m
-    ));
+  const handleMarkAsUnread = async (id: string) => {
+    await markAsUnread(id);
   };
 
   const formatDate = (dateString: string) => {
@@ -95,6 +53,8 @@ export default function MessagesPage() {
 
   return (
     <div className="space-y-6">
+      <Toaster position="top-right" />
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -129,7 +89,13 @@ export default function MessagesPage() {
       <div className="grid lg:grid-cols-5 gap-6">
         {/* Messages List */}
         <div className="lg:col-span-2 space-y-2">
-          {filteredMessages.map((message, index) => (
+          {loading ? (
+            <div className="text-center py-12 text-gray-500">
+              <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin text-primary" />
+              <p>Loading messages...</p>
+            </div>
+          ) : (
+            filteredMessages.map((message, index) => (
             <motion.div
               key={message.id}
               initial={{ opacity: 0, x: -20 }}
@@ -173,9 +139,10 @@ export default function MessagesPage() {
                 </div>
               </button>
             </motion.div>
-          ))}
+          ))
+          )}
 
-          {filteredMessages.length === 0 && (
+          {!loading && filteredMessages.length === 0 && (
             <div className="text-center py-12 text-gray-500">
               <Mail className="w-12 h-12 mx-auto mb-3 opacity-50" />
               <p>No messages found</p>
@@ -249,7 +216,7 @@ export default function MessagesPage() {
                     <Button
                       variant="secondary"
                       leftIcon={<Eye size={18} />}
-                      onClick={() => markAsUnread(selectedMessage.id)}
+                      onClick={() => handleMarkAsUnread(selectedMessage.id)}
                     >
                       Mark Unread
                     </Button>
@@ -257,7 +224,7 @@ export default function MessagesPage() {
                       variant="ghost"
                       className="text-red-400 hover:bg-red-500/10"
                       leftIcon={<Trash2 size={18} />}
-                      onClick={() => deleteMessage(selectedMessage.id)}
+                      onClick={() => handleDeleteMessage(selectedMessage.id)}
                     >
                       Delete
                     </Button>
