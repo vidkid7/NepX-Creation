@@ -153,13 +153,13 @@ export default function HeroSection() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative order-1 lg:order-2 h-[320px] sm:h-[360px] md:h-[420px] lg:h-[500px] xl:h-[600px] 2xl:h-[680px] w-full"
+              className="relative order-1 lg:order-2 h-[280px] xs:h-[320px] sm:h-[380px] md:h-[450px] lg:h-[500px] xl:h-[600px] 2xl:h-[680px] w-full"
             >
               {/* Glow effect behind Spline */}
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 rounded-3xl blur-3xl opacity-50" />
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 rounded-2xl sm:rounded-3xl blur-2xl sm:blur-3xl opacity-50" />
 
-              {/* Spline Viewer */}
-              <div className="relative w-full h-full rounded-3xl overflow-hidden">
+              {/* Spline Viewer - Responsive */}
+              <div className="relative w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden">
                 <Script
                   type="module"
                   src="https://unpkg.com/@splinetool/viewer@1.12.51/build/spline-viewer.js"
@@ -168,17 +168,18 @@ export default function HeroSection() {
                 <spline-viewer
                   url="https://prod.spline.design/oehLr0xvIb1uvWQm/scene.splinecode"
                   loading-anim-type="spinner-small-dark"
+                  className="spline-responsive"
                   style={{
                     width: "100%",
                     height: "100%",
-                    borderRadius: "1.5rem",
+                    borderRadius: "1rem",
                     willChange: "transform",
                     transform: "translateZ(0)",
                   }}
                 />
               </div>
 
-              {/* Floating elements - hidden on small screens */}
+              {/* Floating elements - Responsive sizes */}
               <motion.div
                 animate={{
                   y: [0, -20, 0],
@@ -188,7 +189,7 @@ export default function HeroSection() {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="hidden sm:block absolute -top-3 -right-3 md:-top-4 md:-right-4 lg:-top-6 lg:-right-6 w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-primary to-accent rounded-2xl blur-sm opacity-60"
+                className="hidden xs:block absolute -top-2 -right-2 sm:-top-3 sm:-right-3 md:-top-4 md:-right-4 lg:-top-6 lg:-right-6 w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-primary to-accent rounded-xl sm:rounded-2xl blur-sm opacity-60"
               />
               <motion.div
                 animate={{

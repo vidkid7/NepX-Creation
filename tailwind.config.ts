@@ -8,6 +8,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        'xs': '475px', // Extra small devices
+        '3xl': '1920px', // Extra large screens
+      },
       colors: {
         background: "#000000",
         foreground: "#ffffff",
