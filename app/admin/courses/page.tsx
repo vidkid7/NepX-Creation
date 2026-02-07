@@ -74,15 +74,16 @@ export default function CoursesPage() {
   const [featuresInput, setFeaturesInput] = useState("");
   const [curriculumInput, setCurriculumInput] = useState("");
 
-  useEffect(() => {
-    loadCourses();
-  }, []);
-
   const loadCourses = async () => {
     setIsLoading(true);
     const data = await getCourses();
     setCourses(data);
     setIsLoading(false);
+  };
+
+  useEffect(() => {
+    loadCourses();
+  }, []);
   };
 
   const handleCreate = () => {

@@ -73,7 +73,6 @@ export default function Navbar() {
                 initial={{ width: 0 }}
                 whileHover={{ width: "100%" }}
                 transition={{ duration: 0.2 }}
-                transition={{ duration: 0.3 }}
               />
             </motion.div>
           </Link>
