@@ -84,7 +84,6 @@ export default function CoursesPage() {
   useEffect(() => {
     loadCourses();
   }, []);
-  };
 
   const handleCreate = () => {
     setIsCreating(true);
