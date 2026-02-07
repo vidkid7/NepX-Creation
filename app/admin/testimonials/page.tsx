@@ -136,7 +136,7 @@ export default function TestimonialsPage() {
               <div className="flex items-start gap-4 mb-4">
                 <div className="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0">
                   <Image
-                    src={testimonial.image}
+                    src={testimonial.image || '/placeholder-avatar.jpg'}
                     alt={testimonial.name}
                     fill
                     className="object-cover"
