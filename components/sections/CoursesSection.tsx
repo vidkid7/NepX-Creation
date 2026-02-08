@@ -39,6 +39,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import FadeIn from "@/components/animations/FadeIn";
+import LoadingNepX from "@/components/ui/LoadingNepX";
 import {
   courseCategories,
   applicationProcess,
@@ -338,6 +339,7 @@ export default function CoursesSection() {
 
   useEffect(() => {
     async function fetchCourses() {
+      const startTime = Date.now();
       try {
         const response = await fetch('/api/public/courses');
         const data = await response.json();
@@ -347,7 +349,10 @@ export default function CoursesSection() {
       } catch (error) {
         console.error('Error fetching courses:', error);
       } finally {
-        setLoading(false);
+        // Ensure loading shows for at least 800ms to display animation
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, 800 - elapsedTime);
+        setTimeout(() => setLoading(false), remainingTime);
       }
     }
 
@@ -363,10 +368,10 @@ export default function CoursesSection() {
 
   return (
     <section id="courses" className="relative section-padding overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent/5 to-transparent" />
-      <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[200px]" />
-      <div className="absolute bottom-1/4 right-0 w-[600px] h-[600px] bg-accent/10 rounded-full blur-[200px]" />
+      {/* Background - Darker */}
+      <div className="absolute inset-0 bg-black/60" />
+      <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[200px]" />
+      <div className="absolute bottom-1/4 right-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[200px]" />
 
       <div className="container-custom mx-auto relative z-10">
         {/* Section Header */}
@@ -426,7 +431,7 @@ export default function CoursesSection() {
         {/* Loading State */}
         {loading && (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            <LoadingNepX />
           </div>
         )}
 

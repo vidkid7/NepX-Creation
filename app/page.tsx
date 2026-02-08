@@ -10,17 +10,18 @@ import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import ContactSection from "@/components/sections/ContactSection";
 import CTASection from "@/components/sections/CTASection";
 import CoursesSection from "@/components/sections/CoursesSection";
-import ParticleBackground from "@/components/animations/ParticleBackground";
+import BeautifulBackground from "@/components/animations/BeautifulBackground";
+import PageWrapper from "@/components/PageWrapper";
 
 export default function Home() {
   return (
-    <>
+    <PageWrapper>
       {/* Navigation - Sticky at top */}
       <Navbar />
       
       <main className="relative min-h-screen overflow-hidden">
-        {/* Background Effects */}
-        <ParticleBackground />
+        {/* Beautiful Background Effects */}
+        <BeautifulBackground />
         
         {/* Main Content */}
         <HeroSection />
@@ -37,6 +38,6 @@ export default function Home() {
         {/* Footer */}
         <Footer />
       </main>
-    </>
+    </PageWrapper>
   );
 }

@@ -17,6 +17,8 @@ const navLinks = [
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -26,7 +28,30 @@ export default function Navbar() {
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          setIsScrolled(window.scrollY > 50);
+          const currentScrollY = window.scrollY;
+          
+          // Update background style
+          setIsScrolled(currentScrollY > 50);
+          
+          // Show/hide navbar based on scroll direction
+          // Add threshold to prevent jittery behavior
+          const scrollDifference = Math.abs(currentScrollY - lastScrollY);
+          
+          if (currentScrollY < 100) {
+            // Always show near top
+            setIsVisible(true);
+          } else if (scrollDifference > 5) {
+            // Only update if scrolled more than 5px
+            if (currentScrollY > lastScrollY) {
+              // Scrolling down - hide navbar
+              setIsVisible(false);
+            } else {
+              // Scrolling up - show navbar
+              setIsVisible(true);
+            }
+          }
+          
+          setLastScrollY(currentScrollY);
           ticking = false;
         });
         ticking = true;
@@ -35,7 +60,7 @@ export default function Navbar() {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     setIsMobileMenuOpen(false);
@@ -58,8 +83,12 @@ export default function Navbar() {
 
   return (
     <header
+      style={{
+        transform: isVisible ? 'translateY(0)' : 'translateY(-100%)',
+        transition: 'transform 0.3s ease-in-out, background-color 0.3s ease-in-out'
+      }}
       className={cn(
-        "fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300",
+        "fixed top-0 left-0 right-0 w-full z-50",
         isScrolled
           ? "bg-black/95 backdrop-blur-lg border-b border-white/20 shadow-2xl"
           : "bg-black/80 backdrop-blur-md border-b border-white/10"
