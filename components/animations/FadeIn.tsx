@@ -13,10 +13,10 @@ interface FadeInProps {
 }
 
 const directions = {
-  up: { y: 20, x: 0 }, // Reduced from 30 to 20
-  down: { y: -20, x: 0 }, // Reduced from -30 to -20
-  left: { y: 0, x: 20 }, // Reduced from 30 to 20
-  right: { y: 0, x: -20 }, // Reduced from -30 to -20
+  up: { y: 15, x: 0 }, // Further reduced for faster animations
+  down: { y: -15, x: 0 }, // Further reduced for faster animations
+  left: { y: 0, x: 15 }, // Further reduced for faster animations
+  right: { y: 0, x: -15 }, // Further reduced for faster animations
   none: { y: 0, x: 0 },
 };
 
@@ -24,7 +24,7 @@ export default function FadeIn({
   children,
   direction = "up",
   delay = 0,
-  duration = 0.4, // Reduced from 0.6 to 0.4 for snappier feel
+  duration = 0.3, // Reduced from 0.4 to 0.3 for even snappier feel
   className = "",
   once = true,
 }: FadeInProps) {
@@ -87,15 +87,15 @@ export function FadeInText({
         <motion.span
           key={index}
           className="inline-block"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={
             isInView
               ? { opacity: 1, y: 0 }
-              : { opacity: 0, y: 20 }
+              : { opacity: 0, y: 15 }
           }
           transition={{
-            duration: 0.4,
-            delay: delay + index * 0.05,
+            duration: 0.3,
+            delay: delay + index * 0.04,
             ease: [0.16, 1, 0.3, 1],
           }}
         >

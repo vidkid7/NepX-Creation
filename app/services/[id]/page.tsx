@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -9,6 +10,13 @@ import {
   CheckCircle,
   Star,
   MessageSquare,
+  Loader2,
+  Code,
+  Globe,
+  Zap,
+  Video,
+  TrendingUp,
+  Smartphone,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -16,14 +24,81 @@ import ParticleBackground from "@/components/animations/ParticleBackground";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import FadeIn from "@/components/animations/FadeIn";
-import { mainServices, getServiceById } from "@/lib/services-data";
+
+// Icon mapping
+const iconMap: Record<string, any> = {
+  Code,
+  Globe,
+  Zap,
+  Video,
+  TrendingUp,
+  Smartphone,
+};
+
+type Service = {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  gradient: string;
+  features: string[];
+  active: boolean;
+  order: number;
+};
 
 export default function ServiceDetailPage() {
   const params = useParams();
   const serviceId = params.id as string;
-  const service = getServiceById(serviceId);
+  const [service, setService] = useState<Service | null>(null);
+  const [allServices, setAllServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  if (!service) {
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        // Fetch current service
+        const serviceRes = await fetch(`/api/public/services/${serviceId}`);
+        const serviceData = await serviceRes.json();
+        
+        if (!serviceData.success) {
+          setError(true);
+          setLoading(false);
+          return;
+        }
+        
+        setService(serviceData.data);
+        
+        // Fetch all services for navigation
+        const allRes = await fetch('/api/public/services');
+        const allData = await allRes.json();
+        
+        if (allData.success) {
+          setAllServices(allData.data);
+        }
+      } catch (err) {
+        console.error('Error fetching service:', err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [serviceId]);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-black">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-screen">
+          <Loader2 className="w-12 h-12 text-primary animate-spin" />
+        </div>
+      </main>
+    );
+  }
+
+  if (error || !service) {
     return (
       <main className="min-h-screen bg-black">
         <Navbar />
@@ -42,10 +117,12 @@ export default function ServiceDetailPage() {
   }
 
   // Get adjacent services for navigation
-  const currentIndex = mainServices.findIndex((s) => s.id === serviceId);
-  const prevService = currentIndex > 0 ? mainServices[currentIndex - 1] : null;
+  const currentIndex = allServices.findIndex((s) => s.id === serviceId);
+  const prevService = currentIndex > 0 ? allServices[currentIndex - 1] : null;
   const nextService =
-    currentIndex < mainServices.length - 1 ? mainServices[currentIndex + 1] : null;
+    currentIndex < allServices.length - 1 ? allServices[currentIndex + 1] : null;
+  
+  const IconComponent = iconMap[service.icon] || Code;
 
   return (
     <main className="relative min-h-screen bg-black overflow-hidden">
@@ -88,7 +165,7 @@ export default function ServiceDetailPage() {
                   className={`inline-flex w-20 h-20 rounded-2xl bg-gradient-to-br ${service.gradient} p-0.5 mb-6`}
                 >
                   <div className="w-full h-full rounded-2xl bg-dark flex items-center justify-center">
-                    <service.icon className="w-10 h-10 text-white" />
+                    <IconComponent className="w-10 h-10 text-white" />
                   </div>
                 </motion.div>
               </FadeIn>
@@ -154,52 +231,6 @@ export default function ServiceDetailPage() {
           </div>
         </div>
       </section>
-
-      {/* Sub-Services Section */}
-      {service.subServices && service.subServices.length > 0 && (
-        <section className="py-16 relative">
-          <div className="container-custom mx-auto px-4 sm:px-6 lg:px-8">
-            <FadeIn>
-              <div className="text-center mb-12">
-                <span className="inline-block px-4 py-1.5 mb-4 text-sm font-medium text-primary bg-primary/10 rounded-full border border-primary/20">
-                  Specialized Solutions
-                </span>
-                <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-4">
-                  Our {service.title} Services
-                </h2>
-                <p className="text-gray-400 max-w-2xl mx-auto">
-                  Explore our comprehensive range of {service.title.toLowerCase()} solutions 
-                  tailored to meet your specific business needs.
-                </p>
-              </div>
-            </FadeIn>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {service.subServices.map((subService, index) => (
-                <FadeIn key={index} delay={index * 0.1}>
-                  <GlassCard className="h-full group">
-                    <div className="flex items-start gap-4">
-                      <div
-                        className={`w-12 h-12 rounded-xl bg-gradient-to-br ${service.gradient} bg-opacity-20 flex items-center justify-center flex-shrink-0`}
-                      >
-                        <Star className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <h4 className="text-lg font-heading font-semibold text-white mb-2 group-hover:text-primary transition-colors">
-                          {subService.title}
-                        </h4>
-                        <p className="text-sm text-gray-400 leading-relaxed">
-                          {subService.description}
-                        </p>
-                      </div>
-                    </div>
-                  </GlassCard>
-                </FadeIn>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Why Choose Us */}
       <section className="py-16 relative">

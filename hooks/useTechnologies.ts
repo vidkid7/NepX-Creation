@@ -5,6 +5,8 @@ type Technology = {
   id: string;
   name: string;
   category: string;
+  icon: string;
+  expertise: number;
   color: string;
   active: boolean;
   order: number;

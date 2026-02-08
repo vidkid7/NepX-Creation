@@ -7,6 +7,8 @@ import { z } from 'zod';
 const technologySchema = z.object({
   name: z.string().min(1).optional(),
   category: z.string().min(1).optional(),
+  icon: z.string().optional(),
+  expertise: z.number().int().min(0).max(100).optional(),
   color: z.string().min(1).optional(),
   active: z.boolean().optional(),
   order: z.number().optional(),
@@ -18,7 +20,7 @@ export async function PUT(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -57,7 +59,7 @@ export async function DELETE(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },

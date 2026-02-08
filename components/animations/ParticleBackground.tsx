@@ -61,7 +61,17 @@ export default function ParticleBackground() {
     const createParticles = () => {
       // Adaptive particle count based on screen size and performance
       const area = window.innerWidth * window.innerHeight;
-      const particleCount = Math.min(Math.floor(area / 20000), 80);
+      let particleCount;
+      
+      // More aggressive reduction for mobile devices
+      if (window.innerWidth < 768) {
+        particleCount = Math.min(Math.floor(area / 30000), 30); // Max 30 on mobile (reduced from 40)
+      } else if (window.innerWidth < 1024) {
+        particleCount = Math.min(Math.floor(area / 25000), 50); // Max 50 on tablet (reduced from 60)
+      } else {
+        particleCount = Math.min(Math.floor(area / 20000), 70); // Max 70 on desktop (reduced from 80)
+      }
+      
       particlesRef.current = [];
 
       for (let i = 0; i < particleCount; i++) {
@@ -316,8 +326,7 @@ export default function ParticleBackground() {
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
       style={{ 
-        opacity: 0.7,
-        willChange: "transform",
+        opacity: 0.6, // Reduced from 0.7 for better performance
         transform: "translateZ(0)",
       }}
       aria-hidden="true"

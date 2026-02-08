@@ -74,7 +74,7 @@ export default function HeroSection() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.3 }}
               >
                 <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-gray-300">
                   <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
@@ -86,7 +86,7 @@ export default function HeroSection() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
+                transition={{ duration: 0.3, delay: 0.08 }}
               >
                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-heading font-bold leading-tight">
                   <span className="text-white">{content.title}</span>
@@ -99,7 +99,7 @@ export default function HeroSection() {
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+                transition={{ duration: 0.3, delay: 0.16 }}
                 className="text-base sm:text-lg md:text-xl text-gray-400 max-w-xl leading-relaxed"
               >
                 {content.description}
@@ -109,7 +109,7 @@ export default function HeroSection() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
+                transition={{ duration: 0.3, delay: 0.24 }}
                 className="flex flex-wrap gap-4"
               >
                 <Button
@@ -134,7 +134,7 @@ export default function HeroSection() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
+                transition={{ duration: 0.3, delay: 0.32 }}
                 className="flex flex-wrap gap-6 sm:gap-8 pt-6 sm:pt-8 border-t border-white/10"
               >
                 {content.stats.map((stat, index) => (
@@ -152,7 +152,7 @@ export default function HeroSection() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
               className="relative order-1 lg:order-2 h-[280px] xs:h-[320px] sm:h-[380px] md:h-[450px] lg:h-[500px] xl:h-[600px] 2xl:h-[680px] w-full"
             >
               {/* Glow effect behind Spline */}
@@ -211,7 +211,7 @@ export default function HeroSection() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
+        transition={{ delay: 0.8 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:block"
       >
         <motion.div

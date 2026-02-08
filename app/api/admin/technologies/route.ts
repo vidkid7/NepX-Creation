@@ -7,6 +7,8 @@ import { z } from 'zod';
 const technologySchema = z.object({
   name: z.string().min(1, 'Name is required'),
   category: z.string().min(1, 'Category is required'),
+  icon: z.string().default('🔧'),
+  expertise: z.number().int().min(0).max(100).default(80),
   color: z.string().min(1, 'Color is required'),
   active: z.boolean().default(true),
   order: z.number().optional(),
@@ -31,7 +33,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },

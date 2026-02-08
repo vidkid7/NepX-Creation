@@ -14,27 +14,29 @@ import ParticleBackground from "@/components/animations/ParticleBackground";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen overflow-hidden">
-      {/* Background Effects */}
-      <ParticleBackground />
-      
-      {/* Navigation */}
+    <>
+      {/* Navigation - Sticky at top */}
       <Navbar />
       
-      {/* Main Content */}
-      <HeroSection />
-      <AboutSection />
-      <ServicesSection />
-      <CoursesSection />
-      <PortfolioSection />
-      <WhyChooseUsSection />
-      <TechnologiesSection />
-      <TestimonialsSection />
-      <CTASection />
-      <ContactSection />
-      
-      {/* Footer */}
-      <Footer />
-    </main>
+      <main className="relative min-h-screen overflow-hidden">
+        {/* Background Effects */}
+        <ParticleBackground />
+        
+        {/* Main Content */}
+        <HeroSection />
+        <AboutSection />
+        <ServicesSection />
+        <CoursesSection />
+        <PortfolioSection />
+        <WhyChooseUsSection />
+        <TechnologiesSection />
+        <TestimonialsSection />
+        <CTASection />
+        <ContactSection />
+        
+        {/* Footer */}
+        <Footer />
+      </main>
+    </>
   );
 }

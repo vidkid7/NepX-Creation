@@ -7,11 +7,11 @@ import { z } from 'zod';
 const projectSchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
-  image: z.string().url().optional(),
+  image: z.string().min(1).optional(),
   category: z.string().min(1).optional(),
   technologies: z.array(z.string()).optional(),
-  link: z.string().url().optional().nullable(),
-  github: z.string().url().optional().nullable(),
+  link: z.string().optional().nullable().transform(val => val === '' ? null : val),
+  github: z.string().optional().nullable().transform(val => val === '' ? null : val),
   featured: z.boolean().optional(),
   active: z.boolean().optional(),
   order: z.number().optional(),
@@ -23,7 +23,7 @@ export async function PUT(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -34,9 +34,16 @@ export async function PUT(
     const body = await request.json();
     const validatedData = projectSchema.parse(body);
 
+    // Map github to githubLink for database
+    const { github, ...restData } = validatedData;
+    const updateData: Record<string, unknown> = { ...restData };
+    if (github !== undefined) {
+      updateData.githubLink = github;
+    }
+
     const project = await prisma.project.update({
       where: { id: params.id },
-      data: validatedData,
+      data: updateData,
     });
 
     return NextResponse.json({ success: true, data: project });
@@ -62,7 +69,7 @@ export async function DELETE(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
