@@ -24,6 +24,10 @@ const nextConfig = {
   compress: true,
   // Optimize fonts
   optimizeFonts: true,
+  // Prevent stale Server Action references
+  generateBuildId: async () => {
+    return `build-${Date.now()}`;
+  },
 };
 
 export default nextConfig;
